@@ -1,0 +1,1617 @@
+[
+  {
+    "schemeId": "agri-infra-fund",
+    "schemeName": "Agriculture Infrastructure Fund (AIF)",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "budget",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "budgetFloorINR": 100000
+    },
+    "benefits": [
+      "Interest subvention on eligible agri-infrastructure loans",
+      "Credit guarantee support for notified infrastructure projects"
+    ],
+    "deadlines": "Applications accepted through AIF portal windows and lending institution processing timelines",
+    "documentsRequired": [
+      "Identity proof",
+      "Project proposal/DPR",
+      "Land or lease proof",
+      "Bank KYC documents"
+    ],
+    "actionSteps": [
+      "Create application on AIF portal",
+      "Attach project and financial documents",
+      "Coordinate with bank for sanction and disbursement"
+    ],
+    "officialLink": "https://agriinfra.dac.gov.in/",
+    "sourceUrl": "https://agriinfra.dac.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "high",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "infrastructure",
+      "credit",
+      "post-harvest",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "agristack-farmer-registry",
+    "schemeName": "Digital Farmer Registry / AgriStack-linked Enrollment (State Rollouts)",
+    "authority": "hybrid",
+    "authorityLabel": "State Agriculture Departments + Digital Agriculture Mission",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size",
+      "crop_type"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ]
+    },
+    "benefits": [
+      "Unified farmer records to streamline access to multiple schemes and advisories",
+      "Potential reduction in repeated paperwork across benefit applications"
+    ],
+    "deadlines": "Rollout and registration windows depend on state implementation stage",
+    "documentsRequired": [
+      "Identity proof",
+      "Land records",
+      "Crop details",
+      "Mobile number"
+    ],
+    "actionSteps": [
+      "Check if digital farmer registry is active in your state",
+      "Complete enrollment and record verification",
+      "Use registry linkage for future scheme workflows"
+    ],
+    "officialLink": "https://agriwelfare.gov.in/",
+    "sourceUrl": "https://agriwelfare.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "low",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "digital-registry",
+      "interoperability",
+      "hybrid"
+    ]
+  },
+  {
+    "schemeId": "atma-extension",
+    "schemeName": "ATMA (Agricultural Technology Management Agency) Extension Support",
+    "authority": "hybrid",
+    "authorityLabel": "Central + State Agriculture Extension Network",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ]
+    },
+    "benefits": [
+      "Farmer training, exposure, and extension support through district ATMA units",
+      "Better access to localized agronomic advisories and demonstrations"
+    ],
+    "deadlines": "Program activities are scheduled district-wise through annual extension plans",
+    "documentsRequired": [
+      "Farmer registration details",
+      "Identity proof",
+      "Local agriculture office records"
+    ],
+    "actionSteps": [
+      "Contact district ATMA office or agriculture department",
+      "Register for training and support activities",
+      "Participate in extension events and follow-up sessions"
+    ],
+    "officialLink": "https://atmaindia.net/",
+    "sourceUrl": "https://atmaindia.net/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "low",
+    "estimatedEffort": "low",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "extension",
+      "training",
+      "capacity-building",
+      "hybrid"
+    ]
+  },
+  {
+    "schemeId": "bpkp-natural-farming",
+    "schemeName": "Bharatiya Prakritik Krishi Paddhati (BPKP)",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "risk_preference"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "preferredRiskProfiles": [
+        "medium",
+        "high"
+      ]
+    },
+    "benefits": [
+      "Support for natural farming cluster development under broader sustainable agriculture framework",
+      "Capacity building for low external-input farming transitions"
+    ],
+    "deadlines": "Cluster calls and coverage depend on state implementation cycles",
+    "documentsRequired": [
+      "Identity proof",
+      "Land details",
+      "Cluster registration information"
+    ],
+    "actionSteps": [
+      "Check district natural farming cluster availability",
+      "Enroll in approved group/cluster",
+      "Follow prescribed training and implementation milestones"
+    ],
+    "officialLink": "https://pkvy.nic.in/",
+    "sourceUrl": "https://pkvy.nic.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "annual",
+    "tags": [
+      "natural-farming",
+      "sustainable",
+      "cluster",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "cg-rajiv-gandhi-kisan-nyay",
+    "schemeName": "Rajiv Gandhi Kisan Nyay Yojana (Chhattisgarh)",
+    "authority": "state",
+    "authorityLabel": "Government of Chhattisgarh",
+    "stateScope": [
+      "chhattisgarh"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "chhattisgarh"
+      ]
+    },
+    "benefits": [
+      "State financial support to eligible cultivator categories and notified crops",
+      "Support intent is to improve cultivation economics for participating farmers"
+    ],
+    "deadlines": "Installment and enrollment updates follow state notifications",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Land/cultivation records",
+      "Bank account details"
+    ],
+    "actionSteps": [
+      "Check latest district notification and eligibility list",
+      "Update beneficiary records where required",
+      "Track installment release status"
+    ],
+    "officialLink": "https://rgkny.cg.nic.in/",
+    "sourceUrl": "https://rgkny.cg.nic.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "state-income-support",
+      "chhattisgarh",
+      "dbt"
+    ]
+  },
+  {
+    "schemeId": "enam",
+    "schemeName": "National Agriculture Market (eNAM)",
+    "authority": "central",
+    "authorityLabel": "Small Farmers Agribusiness Consortium (SFAC)",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ]
+    },
+    "benefits": [
+      "Unified online trading platform for notified mandis",
+      "Better market discovery and transparent price comparison"
+    ],
+    "deadlines": "Registration is typically ongoing; mandi onboarding and state rollout vary",
+    "documentsRequired": [
+      "Identity proof",
+      "Bank account details",
+      "Farmer/Trader registration details as per mandi"
+    ],
+    "actionSteps": [
+      "Check if local mandi is eNAM enabled",
+      "Complete registration on eNAM platform",
+      "Start price discovery and e-trading as per mandi rules"
+    ],
+    "officialLink": "https://www.enam.gov.in/web/",
+    "sourceUrl": "https://www.enam.gov.in/web/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "high",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "immediate",
+    "tags": [
+      "market-linkage",
+      "price-discovery",
+      "digital-market",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "fpo-formation-10k",
+    "schemeName": "Formation and Promotion of 10,000 FPOs",
+    "authority": "central",
+    "authorityLabel": "Government of India + Implementing Agencies",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ]
+    },
+    "benefits": [
+      "Support for farmer collective formation, capacity building, and handholding",
+      "Improved market negotiation and aggregation opportunities through FPO structure"
+    ],
+    "deadlines": "Cluster-wise implementation; check district-level availability and mobilization windows",
+    "documentsRequired": [
+      "Member details",
+      "Land/cultivation details",
+      "Group registration papers",
+      "Bank account details"
+    ],
+    "actionSteps": [
+      "Contact implementing agency in your district",
+      "Mobilize farmer members and complete group formalities",
+      "Finalize FPO registration and onboarding plan"
+    ],
+    "officialLink": "https://sfacindia.com/",
+    "sourceUrl": "https://sfacindia.com/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "annual",
+    "tags": [
+      "fpo",
+      "collective",
+      "market-linkage",
+      "capacity-building"
+    ]
+  },
+  {
+    "schemeId": "haryana-meri-fasal-mera-byora",
+    "schemeName": "Meri Fasal Mera Byora (Haryana)",
+    "authority": "state",
+    "authorityLabel": "Government of Haryana",
+    "stateScope": [
+      "haryana"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "haryana"
+      ]
+    },
+    "benefits": [
+      "Unified farmer crop registration layer used for multiple state-linked benefits and services",
+      "Improved traceability for procurement and related support eligibility"
+    ],
+    "deadlines": "Crop registration windows are season-bound and mandatory for linked benefits",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Land details",
+      "Crop sowing details",
+      "Mobile number"
+    ],
+    "actionSteps": [
+      "Register crop details on MFMb portal during season window",
+      "Validate land and crop entries",
+      "Use registration for downstream scheme/procurement workflows"
+    ],
+    "officialLink": "https://fasal.haryana.gov.in/",
+    "sourceUrl": "https://fasal.haryana.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "registration",
+      "haryana",
+      "benefit-linkage"
+    ]
+  },
+  {
+    "schemeId": "jharkhand-krishi-ashirwad",
+    "schemeName": "Mukhyamantri Krishi Ashirwad Yojana (Jharkhand)",
+    "authority": "state",
+    "authorityLabel": "Government of Jharkhand",
+    "stateScope": [
+      "jharkhand"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "jharkhand"
+      ]
+    },
+    "benefits": [
+      "State support for eligible small and marginal farmers in notified cycles",
+      "Assistance aimed at cultivation readiness and seasonal support"
+    ],
+    "deadlines": "Enrollment and verification timelines depend on state notifications",
+    "documentsRequired": [
+      "Identity proof",
+      "Land records",
+      "Bank details"
+    ],
+    "actionSteps": [
+      "Check latest eligibility and active phase",
+      "Update beneficiary details at local facilitation center",
+      "Track payment release updates"
+    ],
+    "officialLink": "https://mmkay.jharkhand.gov.in/",
+    "sourceUrl": "https://mmkay.jharkhand.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "low",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "state-support",
+      "jharkhand",
+      "small-marginal"
+    ]
+  },
+  {
+    "schemeId": "kalia-odisha",
+    "schemeName": "KALIA Scheme (Odisha)",
+    "authority": "state",
+    "authorityLabel": "Government of Odisha",
+    "stateScope": [
+      "odisha"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size",
+      "budget"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "odisha"
+      ],
+      "maxLandSizeAcres": 5
+    },
+    "benefits": [
+      "Targeted livelihood and cultivation support for small and marginal farmer households",
+      "Additional support categories for vulnerable agricultural households"
+    ],
+    "deadlines": "State-announced cycles; check latest Odisha notifications",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Ration card or household proof",
+      "Land/cultivation details",
+      "Bank account details"
+    ],
+    "actionSteps": [
+      "Verify scheme status on KALIA portal",
+      "Submit or update household details",
+      "Track beneficiary list and payment status"
+    ],
+    "officialLink": "https://kalia.odisha.gov.in/",
+    "sourceUrl": "https://kalia.odisha.gov.in/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "medium",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "immediate",
+    "tags": [
+      "state-income-support",
+      "small-marginal",
+      "odisha",
+      "dbt"
+    ]
+  },
+  {
+    "schemeId": "kisan-credit-card",
+    "schemeName": "Kisan Credit Card (KCC)",
+    "authority": "hybrid",
+    "authorityLabel": "GoI + Participating Banks",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size",
+      "crop_type",
+      "budget"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "minLandSizeAcres": 0,
+      "budgetFloorINR": 10000
+    },
+    "benefits": [
+      "Access to short-term crop credit through revolving credit limit",
+      "Interest subvention for timely repayment (as per current policy)"
+    ],
+    "deadlines": "Applications accepted year-round; processing depends on bank branch and records",
+    "documentsRequired": [
+      "Identity proof",
+      "Address proof",
+      "Land records or cultivation proof",
+      "Bank KYC documents"
+    ],
+    "actionSteps": [
+      "Approach nearby bank branch offering KCC",
+      "Submit KCC application with land and crop details",
+      "Track sanction and card issuance status"
+    ],
+    "officialLink": "https://www.myscheme.gov.in/schemes/kcc",
+    "sourceUrl": "https://www.myscheme.gov.in/schemes/kcc",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "medium",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "immediate",
+    "tags": [
+      "credit",
+      "working-capital",
+      "banking",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "krishak-bandhu-west-bengal",
+    "schemeName": "Krishak Bandhu (West Bengal)",
+    "authority": "state",
+    "authorityLabel": "Government of West Bengal",
+    "stateScope": [
+      "west bengal"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size",
+      "risk_preference"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "west bengal"
+      ],
+      "minLandSizeAcres": 0
+    },
+    "benefits": [
+      "Financial assistance for eligible farmer families",
+      "Additional social security support components for enrolled families"
+    ],
+    "deadlines": "Enrollment and payment cycles follow state agriculture notifications",
+    "documentsRequired": [
+      "Identity documents",
+      "Land records",
+      "Bank account details"
+    ],
+    "actionSteps": [
+      "Check district agriculture office guidance",
+      "Submit/refresh enrollment details",
+      "Verify beneficiary status during payment cycle"
+    ],
+    "officialLink": "https://krishakbandhu.net/",
+    "sourceUrl": "https://krishakbandhu.net/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "low",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "state-income-support",
+      "west-bengal",
+      "farmer-welfare"
+    ]
+  },
+  {
+    "schemeId": "maharashtra-namo-shetkari",
+    "schemeName": "Namo Shetkari Maha Samman Nidhi (Maharashtra)",
+    "authority": "state",
+    "authorityLabel": "Government of Maharashtra",
+    "stateScope": [
+      "maharashtra"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "maharashtra"
+      ]
+    },
+    "benefits": [
+      "State income-support top-up for eligible farmer beneficiaries",
+      "Installment support routed through DBT-linked records"
+    ],
+    "deadlines": "Payment cycles and beneficiary validation follow state circulars",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Land records",
+      "Bank account details"
+    ],
+    "actionSteps": [
+      "Check beneficiary inclusion status on state portal",
+      "Resolve record mismatches with local authorities",
+      "Monitor installment status"
+    ],
+    "officialLink": "https://nsmny.mahait.org/",
+    "sourceUrl": "https://nsmny.mahait.org/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "low",
+    "cashImpactWindow": "immediate",
+    "tags": [
+      "state-income-support",
+      "maharashtra",
+      "dbt"
+    ]
+  },
+  {
+    "schemeId": "midh",
+    "schemeName": "Mission for Integrated Development of Horticulture (MIDH)",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ]
+    },
+    "benefits": [
+      "Support for horticulture area expansion, protected cultivation, and post-harvest components",
+      "Subsidy components differ by activity and beneficiary category"
+    ],
+    "deadlines": "State annual action plans and component windows determine application cut-offs",
+    "documentsRequired": [
+      "Identity proof",
+      "Land details",
+      "Activity proposal",
+      "Bank details"
+    ],
+    "actionSteps": [
+      "Select MIDH component applicable to your crop/plan",
+      "Submit application through state horticulture department",
+      "Complete field verification and subsidy claim steps"
+    ],
+    "officialLink": "https://midh.gov.in/",
+    "sourceUrl": "https://midh.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "high",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "horticulture",
+      "subsidy",
+      "post-harvest",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "mp-mukhyamantri-kisan-kalyan",
+    "schemeName": "Mukhyamantri Kisan Kalyan Yojana (Madhya Pradesh)",
+    "authority": "state",
+    "authorityLabel": "Government of Madhya Pradesh",
+    "stateScope": [
+      "madhya pradesh"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "madhya pradesh"
+      ]
+    },
+    "benefits": [
+      "State-level farmer income support aligned to beneficiary verification cycles",
+      "Direct transfer support for eligible farmer records"
+    ],
+    "deadlines": "Installment cycles and eligibility updates are issued by state administration",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Land records",
+      "Bank details"
+    ],
+    "actionSteps": [
+      "Verify your beneficiary status in state records",
+      "Update any pending land/bank mismatches",
+      "Track installment release schedule"
+    ],
+    "officialLink": "https://saara.mp.gov.in/",
+    "sourceUrl": "https://saara.mp.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "low",
+    "cashImpactWindow": "immediate",
+    "tags": [
+      "state-income-support",
+      "madhya-pradesh",
+      "dbt"
+    ]
+  },
+  {
+    "schemeId": "national-bamboo-mission",
+    "schemeName": "National Bamboo Mission (NBM)",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "cropIncludes": [
+        "bamboo"
+      ]
+    },
+    "benefits": [
+      "Assistance for bamboo plantation and nursery development in supported clusters",
+      "Support for value-chain and market linkage interventions"
+    ],
+    "deadlines": "Availability depends on state implementation and approved action plan cycles",
+    "documentsRequired": [
+      "Identity proof",
+      "Land/cultivation details",
+      "Bank account details",
+      "Plantation plan"
+    ],
+    "actionSteps": [
+      "Check district NBM implementation status",
+      "Apply through agriculture/horticulture office",
+      "Follow plantation and reporting requirements"
+    ],
+    "officialLink": "https://nbm.nic.in/",
+    "sourceUrl": "https://nbm.nic.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "annual",
+    "tags": [
+      "bamboo",
+      "plantation",
+      "value-chain",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "national-beekeeping-honey-mission",
+    "schemeName": "National Beekeeping & Honey Mission (NBHM)",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "budget"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ]
+    },
+    "benefits": [
+      "Support for beekeeping infrastructure, training, and value-add activities",
+      "Potential additional pollination benefits for crop productivity"
+    ],
+    "deadlines": "Component openings follow annual implementation cycles",
+    "documentsRequired": [
+      "Identity proof",
+      "Training/experience records if required",
+      "Project/activity details",
+      "Bank details"
+    ],
+    "actionSteps": [
+      "Check active component under implementing agency",
+      "Submit activity proposal and beneficiary details",
+      "Complete verification and utilization steps"
+    ],
+    "officialLink": "https://nbhm.gov.in/",
+    "sourceUrl": "https://nbhm.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "beekeeping",
+      "honey",
+      "allied-activity",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "nfsm",
+    "schemeName": "National Food Security Mission (NFSM)",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "cropIncludes": [
+        "rice",
+        "wheat",
+        "pulses",
+        "coarse cereals"
+      ]
+    },
+    "benefits": [
+      "Assistance for productivity enhancement interventions in targeted crops",
+      "Demonstrations, inputs, and extension support in notified areas"
+    ],
+    "deadlines": "District and season-specific implementation plans drive availability",
+    "documentsRequired": [
+      "Identity proof",
+      "Land details",
+      "Crop details",
+      "Bank details"
+    ],
+    "actionSteps": [
+      "Verify whether your block/district is covered for crop component",
+      "Apply through local agriculture office",
+      "Participate in demonstration/input distribution workflow"
+    ],
+    "officialLink": "https://nfsm.gov.in/",
+    "sourceUrl": "https://nfsm.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "high",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "food-security",
+      "productivity",
+      "rice",
+      "wheat",
+      "pulses"
+    ]
+  },
+  {
+    "schemeId": "nmsa-rad",
+    "schemeName": "Rainfed Area Development (RAD) under NMSA",
+    "authority": "central",
+    "authorityLabel": "National Mission for Sustainable Agriculture",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size",
+      "irrigation"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "irrigationIncludes": [
+        "rainfed",
+        "mixed"
+      ]
+    },
+    "benefits": [
+      "Integrated farming and resilience-focused support for rainfed geographies",
+      "Potential convergence of soil, water, and livelihood interventions"
+    ],
+    "deadlines": "State annual implementation plans determine beneficiary window",
+    "documentsRequired": [
+      "Identity proof",
+      "Land/farm details",
+      "Bank details",
+      "Rainfed area details if requested"
+    ],
+    "actionSteps": [
+      "Check RAD implementation in your district",
+      "Submit beneficiary application through agriculture office",
+      "Complete verification and activity execution process"
+    ],
+    "officialLink": "https://nmsa.dac.gov.in/",
+    "sourceUrl": "https://nmsa.dac.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "low",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "rainfed",
+      "resilience",
+      "integrated-farming",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "operation-greens-top",
+    "schemeName": "Operation Greens (TOP and notified perishables)",
+    "authority": "central",
+    "authorityLabel": "Ministry of Food Processing Industries",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "budget"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "cropIncludes": [
+        "tomato",
+        "onion",
+        "potato"
+      ]
+    },
+    "benefits": [
+      "Support to reduce post-harvest losses and improve value-chain stabilization in targeted crops",
+      "Intervention support routed through eligible entities and approved components"
+    ],
+    "deadlines": "Component approval windows vary by program notification and implementing agency",
+    "documentsRequired": [
+      "Entity/farmer group details",
+      "Project/activity proposal",
+      "Bank details"
+    ],
+    "actionSteps": [
+      "Check active Operation Greens component notice",
+      "Prepare proposal with value-chain plan",
+      "Submit to implementing authority and complete compliance checks"
+    ],
+    "officialLink": "https://mofpi.nic.in/",
+    "sourceUrl": "https://mofpi.nic.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "low",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "post-harvest",
+      "top-crops",
+      "value-chain",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "pkvy",
+    "schemeName": "Paramparagat Krishi Vikas Yojana (PKVY)",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "risk_preference"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "preferredRiskProfiles": [
+        "medium",
+        "high"
+      ]
+    },
+    "benefits": [
+      "Support for organic farming clusters",
+      "Assistance for certification and input management"
+    ],
+    "deadlines": "Cluster-based approvals under periodic state calls",
+    "documentsRequired": [
+      "Farmer identity details",
+      "Land details",
+      "Cluster enrollment documentation"
+    ],
+    "actionSteps": [
+      "Contact district agriculture department for active clusters",
+      "Enroll in approved organic farming group/cluster",
+      "Follow certification and farm practice guidelines"
+    ],
+    "officialLink": "https://pgsindia-ncof.gov.in/",
+    "sourceUrl": "https://pgsindia-ncof.gov.in/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "medium",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "annual",
+    "tags": [
+      "organic",
+      "cluster",
+      "certification",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "pm-kisan",
+    "schemeName": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+    "authority": "central",
+    "authorityLabel": "Government of India",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "minLandSizeAcres": 0
+    },
+    "benefits": [
+      "Income support of Rs. 6,000 per year in three installments",
+      "Direct Benefit Transfer to registered farmer bank account"
+    ],
+    "deadlines": "Continuous enrollment; Aadhaar and land record verification required before installments",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Land ownership record",
+      "Bank account details",
+      "Mobile number"
+    ],
+    "actionSteps": [
+      "Check eligibility and beneficiary status on PM-KISAN portal",
+      "Submit or update farmer details via CSC or local agriculture office",
+      "Verify Aadhaar seeding and bank account linkage"
+    ],
+    "officialLink": "https://pmkisan.gov.in/",
+    "sourceUrl": "https://pmkisan.gov.in/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "high",
+    "estimatedEffort": "low",
+    "cashImpactWindow": "immediate",
+    "tags": [
+      "income-support",
+      "dbt",
+      "smallholder",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "pm-kisan-maandhan",
+    "schemeName": "Pradhan Mantri Kisan Maandhan Yojana (PM-KMY)",
+    "authority": "central",
+    "authorityLabel": "Government of India",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size",
+      "risk_preference"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "maxLandSizeAcres": 5
+    },
+    "benefits": [
+      "Assured pension support after 60 years for eligible small and marginal farmers",
+      "Government co-contribution mechanism tied to farmer contribution"
+    ],
+    "deadlines": "Enrollment is open; contribution must continue until pension eligibility age as per scheme terms",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Bank passbook",
+      "Land records",
+      "Mobile number"
+    ],
+    "actionSteps": [
+      "Enroll through CSC or authorized center",
+      "Complete Aadhaar and bank verification",
+      "Track contribution status periodically"
+    ],
+    "officialLink": "https://maandhan.in/",
+    "sourceUrl": "https://maandhan.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "annual",
+    "tags": [
+      "pension",
+      "small-marginal",
+      "social-security",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "pm-kusum",
+    "schemeName": "PM-KUSUM (Solar Pump and Decentralized Solar)",
+    "authority": "central",
+    "authorityLabel": "Ministry of New and Renewable Energy",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "irrigation",
+      "budget"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "irrigationExcludes": [
+        "none"
+      ]
+    },
+    "benefits": [
+      "Subsidy support for solar pump and related installations through approved channels",
+      "Lower recurring irrigation energy cost and improved reliability in many geographies"
+    ],
+    "deadlines": "State nodal agency timelines vary by component and tender cycle",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Land ownership or consent documents",
+      "Bank details",
+      "Electricity/pump details as applicable"
+    ],
+    "actionSteps": [
+      "Check component availability in your state",
+      "Apply via state nodal agency/portal",
+      "Complete verification and vendor installation process"
+    ],
+    "officialLink": "https://pmkusum.mnre.gov.in/",
+    "sourceUrl": "https://pmkusum.mnre.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "high",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "solar",
+      "irrigation",
+      "energy-cost",
+      "subsidy"
+    ]
+  },
+  {
+    "schemeId": "pmfby",
+    "schemeName": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+    "authority": "central",
+    "authorityLabel": "Government of India",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "farm_size",
+      "risk_preference"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "minLandSizeAcres": 0
+    },
+    "benefits": [
+      "Crop insurance against yield loss from natural calamities, pests and diseases",
+      "Low farmer premium rates with remaining premium subsidized"
+    ],
+    "deadlines": "Season-bound enrollment; verify sowing-season notification dates per district",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Land record or lease proof",
+      "Sowing declaration",
+      "Bank account details"
+    ],
+    "actionSteps": [
+      "Check notified crops and cut-off dates for your district",
+      "Enroll through bank, CSC, insurer portal, or PMFBY portal",
+      "Report crop loss quickly within notified timeline"
+    ],
+    "officialLink": "https://pmfby.gov.in/",
+    "sourceUrl": "https://pmfby.gov.in/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "high",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "insurance",
+      "risk-mitigation",
+      "crop-loss",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "pmfme",
+    "schemeName": "PM Formalisation of Micro Food Processing Enterprises (PMFME)",
+    "authority": "central",
+    "authorityLabel": "Ministry of Food Processing Industries",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "budget",
+      "crop_type"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "budgetFloorINR": 50000
+    },
+    "benefits": [
+      "Credit-linked support for eligible micro food processing units",
+      "Support for branding, quality improvement, and value-add in selected products"
+    ],
+    "deadlines": "State and district implementation windows vary for beneficiary onboarding",
+    "documentsRequired": [
+      "Identity proof",
+      "Business/activity details",
+      "Project report",
+      "Bank documents"
+    ],
+    "actionSteps": [
+      "Check PMFME nodal agency instructions in your state",
+      "Submit application with project details",
+      "Complete appraisal, sanction, and utilization compliance"
+    ],
+    "officialLink": "https://pmfme.mofpi.gov.in/",
+    "sourceUrl": "https://pmfme.mofpi.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "high",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "food-processing",
+      "value-addition",
+      "credit-linked",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "pmksy-per-drop-more-crop",
+    "schemeName": "PMKSY - Per Drop More Crop",
+    "authority": "central",
+    "authorityLabel": "Ministry of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "irrigation",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "minLandSizeAcres": 0,
+      "irrigationExcludes": [
+        "none"
+      ]
+    },
+    "benefits": [
+      "Subsidy support for micro-irrigation (drip/sprinkler)",
+      "Improved water-use efficiency and productivity"
+    ],
+    "deadlines": "State implementation windows vary; apply as per district agriculture department schedule",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Land records",
+      "Bank account details",
+      "Irrigation installation quotation"
+    ],
+    "actionSteps": [
+      "Check subsidy norms in your state",
+      "Apply through district agriculture/horticulture office",
+      "Complete vendor installation and subsidy claim verification"
+    ],
+    "officialLink": "https://pmksy.gov.in/",
+    "sourceUrl": "https://pmksy.gov.in/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "medium",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "irrigation",
+      "micro-irrigation",
+      "water-efficiency",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "rkvy-raftaar",
+    "schemeName": "Rashtriya Krishi Vikas Yojana (RKVY-RAFTAAR)",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type",
+      "budget"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ]
+    },
+    "benefits": [
+      "State-level flexibility for agriculture and allied sector investment components",
+      "Innovation and entrepreneurship support routes in selected tracks"
+    ],
+    "deadlines": "Component-specific timelines vary by state and implementing body",
+    "documentsRequired": [
+      "Identity details",
+      "Project concept note",
+      "Land/farm details",
+      "Bank details"
+    ],
+    "actionSteps": [
+      "Check active RKVY components in your state",
+      "Submit application through designated channel",
+      "Track sanction and implementation milestones"
+    ],
+    "officialLink": "https://rkvy.da.gov.in/",
+    "sourceUrl": "https://rkvy.da.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "annual",
+    "tags": [
+      "state-projects",
+      "innovation",
+      "investment",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "rythu-bandhu-telangana",
+    "schemeName": "Rythu Bandhu (Telangana)",
+    "authority": "state",
+    "authorityLabel": "Government of Telangana",
+    "stateScope": [
+      "telangana"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "telangana"
+      ],
+      "minLandSizeAcres": 0
+    },
+    "benefits": [
+      "Per-acre seasonal investment support for eligible land-owning farmers",
+      "Direct transfer to support input purchase before cultivation season"
+    ],
+    "deadlines": "Seasonal transfer cycles as notified by state government",
+    "documentsRequired": [
+      "Land ownership records",
+      "Aadhaar card",
+      "Bank account details"
+    ],
+    "actionSteps": [
+      "Confirm land records and beneficiary inclusion",
+      "Update Aadhaar-bank linkage if needed",
+      "Track seasonal transfer status"
+    ],
+    "officialLink": "https://rythubandhu.telangana.gov.in/",
+    "sourceUrl": "https://rythubandhu.telangana.gov.in/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "high",
+    "estimatedEffort": "low",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "state-income-support",
+      "telangana",
+      "seasonal-input-support"
+    ]
+  },
+  {
+    "schemeId": "smam",
+    "schemeName": "Sub-Mission on Agricultural Mechanization (SMAM)",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size",
+      "budget"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ],
+      "minLandSizeAcres": 0,
+      "budgetFloorINR": 20000
+    },
+    "benefits": [
+      "Subsidy on farm machinery and equipment",
+      "Support through CHC/FPO routes in many states"
+    ],
+    "deadlines": "State portal windows and budget releases drive availability",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Land details",
+      "Bank account details",
+      "Quotation/invoice from approved vendor"
+    ],
+    "actionSteps": [
+      "Check state agriculture mechanization portal",
+      "Submit machinery subsidy application",
+      "Complete verification and claim process"
+    ],
+    "officialLink": "https://agrimachinery.nic.in/",
+    "sourceUrl": "https://agrimachinery.nic.in/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "medium",
+    "estimatedEffort": "high",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "mechanization",
+      "subsidy",
+      "equipment",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "soil-health-card",
+    "schemeName": "Soil Health Card Scheme",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ]
+    },
+    "benefits": [
+      "Soil nutrient analysis and recommendations",
+      "Guidance on balanced fertilizer and input usage"
+    ],
+    "deadlines": "Collection cycles are campaign-based; contact local agriculture office for current cycle",
+    "documentsRequired": [
+      "Farmer identity details",
+      "Land parcel details",
+      "Crop details for sample context"
+    ],
+    "actionSteps": [
+      "Request soil sample collection through local agriculture office",
+      "Obtain Soil Health Card report",
+      "Apply nutrient plan based on report"
+    ],
+    "officialLink": "https://soilhealth.dac.gov.in/",
+    "sourceUrl": "https://soilhealth.dac.gov.in/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "high",
+    "estimatedEffort": "low",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "soil",
+      "fertility",
+      "input-optimization",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "sub-mission-seeds-planting-material",
+    "schemeName": "Sub-Mission on Seeds and Planting Material (SMSP)",
+    "authority": "central",
+    "authorityLabel": "Department of Agriculture & Farmers Welfare",
+    "stateScope": [
+      "all"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "crop_type"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "all"
+      ]
+    },
+    "benefits": [
+      "Support pathways for quality seed production and distribution systems",
+      "Potential access to certified seed-linked interventions"
+    ],
+    "deadlines": "Implementation is typically routed through state seed programs",
+    "documentsRequired": [
+      "Identity proof",
+      "Farmer/producer details",
+      "Crop details",
+      "Bank details"
+    ],
+    "actionSteps": [
+      "Check seed mission activities in your district",
+      "Apply through designated agriculture/seed agency channel",
+      "Complete verification and distribution process"
+    ],
+    "officialLink": "https://seednet.gov.in/",
+    "sourceUrl": "https://seednet.gov.in/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "low",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "seasonal",
+    "tags": [
+      "seed",
+      "planting-material",
+      "quality-inputs",
+      "central"
+    ]
+  },
+  {
+    "schemeId": "telangana-raithu-bima",
+    "schemeName": "Rythu Bima (Telangana)",
+    "authority": "state",
+    "authorityLabel": "Government of Telangana",
+    "stateScope": [
+      "telangana"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size",
+      "risk_preference"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "telangana"
+      ]
+    },
+    "benefits": [
+      "State-backed farmer group life insurance support for eligible beneficiaries",
+      "Intended to improve household resilience against major financial shocks"
+    ],
+    "deadlines": "Enrollment and claim windows follow state policy and beneficiary registration cycles",
+    "documentsRequired": [
+      "Identity proof",
+      "Land/beneficiary records",
+      "Nominee details"
+    ],
+    "actionSteps": [
+      "Ensure beneficiary registration is current",
+      "Verify nominee and record details",
+      "Follow notified claim process if required"
+    ],
+    "officialLink": "https://www.raitubandhu.telangana.gov.in/RythuBima/",
+    "sourceUrl": "https://www.raitubandhu.telangana.gov.in/RythuBima/",
+    "sourceLastCheckedAt": "2026-02-09",
+    "confidenceTag": "medium",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "annual",
+    "tags": [
+      "state-insurance",
+      "telangana",
+      "risk-cover"
+    ]
+  },
+  {
+    "schemeId": "ysr-rythu-bharosa-ap",
+    "schemeName": "YSR Rythu Bharosa (Andhra Pradesh)",
+    "authority": "state",
+    "authorityLabel": "Government of Andhra Pradesh",
+    "stateScope": [
+      "andhra pradesh"
+    ],
+    "eligibilityInputs": [
+      "location",
+      "farm_size",
+      "budget"
+    ],
+    "eligibilityRules": {
+      "states": [
+        "andhra pradesh"
+      ],
+      "minLandSizeAcres": 0
+    },
+    "benefits": [
+      "Annual financial support for eligible cultivator families",
+      "State support often aligned with central PM-KISAN transfers"
+    ],
+    "deadlines": "Installment schedule follows state notifications",
+    "documentsRequired": [
+      "Aadhaar card",
+      "Land/cultivation records",
+      "Bank account details",
+      "Local revenue records where applicable"
+    ],
+    "actionSteps": [
+      "Check beneficiary status on state portal",
+      "Resolve land record mismatches at local office",
+      "Ensure DBT-ready bank account"
+    ],
+    "officialLink": "https://ysrrythubharosa.ap.gov.in/",
+    "sourceUrl": "https://ysrrythubharosa.ap.gov.in/",
+    "sourceLastCheckedAt": "2026-02-08",
+    "confidenceTag": "medium",
+    "estimatedEffort": "medium",
+    "cashImpactWindow": "immediate",
+    "tags": [
+      "state-income-support",
+      "andhra-pradesh",
+      "dbt",
+      "cultivator-support"
+    ]
+  }
+]

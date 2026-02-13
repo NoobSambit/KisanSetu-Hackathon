@@ -1,0 +1,1080 @@
+# Application-Wide Updates Log
+
+This file tracks cross-cutting app and process changes across all hackathon days.
+
+## Entry Format
+- Timestamp (IST)
+- Day/Phase
+- Change Summary
+- Files touched
+- Validation
+
+---
+
+## 2026-02-13 15:03 IST | Review 1 / Complete Pitch Deck Creation
+
+- Summary:
+  - Created comprehensive pitch deck materials for Hackathon Review 1 presentation.
+  - Generated 19 detailed markdown slides covering all aspects of KisanSetu project.
+  - Content includes: Problem statement, solution, 4 novelty factors, technical architecture, competitive analysis, implementation status, business model, impact metrics, technical challenges solved, demo script, future roadmap, Q&A preparation, and validation evidence.
+  - Slides designed to convert to PPT using Kimi AI or similar tools.
+  - All content based on actual implemented features with documented validation evidence.
+- Files:
+  - `docs/hackathon/review1_pitch_deck/01_title_slide.md`
+  - `docs/hackathon/review1_pitch_deck/02_problem_statement.md`
+  - `docs/hackathon/review1_pitch_deck/03_solution_farm_memory.md`
+  - `docs/hackathon/review1_pitch_deck/04_novelty_satellite.md`
+  - `docs/hackathon/review1_pitch_deck/05_novelty_scheme_matcher.md`
+  - `docs/hackathon/review1_pitch_deck/06_novelty_voice_assistant.md`
+  - `docs/hackathon/review1_pitch_deck/07_technical_architecture.md`
+  - `docs/hackathon/review1_pitch_deck/08_competitive_analysis.md`
+  - `docs/hackathon/review1_pitch_deck/09_implementation_status.md`
+  - `docs/hackathon/review1_pitch_deck/10_business_model.md`
+  - `docs/hackathon/review1_pitch_deck/11_impact_metrics.md`
+  - `docs/hackathon/review1_pitch_deck/12_technical_challenges.md`
+  - `docs/hackathon/review1_pitch_deck/13_demo_script.md`
+  - `docs/hackathon/review1_pitch_deck/14_future_roadmap.md`
+  - `docs/hackathon/review1_pitch_deck/15_why_we_win.md`
+  - `docs/hackathon/review1_pitch_deck/16_qa_preparation.md`
+  - `docs/hackathon/review1_pitch_deck/17_appendix_technical.md`
+  - `docs/hackathon/review1_pitch_deck/18_appendix_validation.md`
+  - `docs/hackathon/review1_pitch_deck/19_team_closing.md`
+  - `docs/hackathon/review1_pitch_deck/README.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+- Validation:
+  - Pitch deck content reviewed against PRD Progress Tracker for accuracy.
+  - All validation evidence cross-referenced with actual test results.
+  - Demo script validated against working application routes.
+
+---
+
+## 2026-02-13 13:58 IST | Day 6 / Satellite Live-Data Regression Fix (Default Numeric Query Parsing)
+- Summary:
+  - Investigated why `/satellite` kept showing fallback sample scenes despite valid farm geometry and CDSE credentials.
+  - Root cause found in `/api/satellite/health`: missing numeric query params were parsed via `Number(null)` and became `0` instead of fallback defaults.
+  - This forced `maxCloudCover=0` and zero-day analysis windows, which caused no-scene results and frequent fallback/sample responses.
+  - Fixed numeric parser to treat missing/blank values as true defaults.
+- Files:
+  - `app/api/satellite/health/route.ts`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/README.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `GET /api/satellite/health?userId=ivjHbhwZHmUvaZB1o2eS42oaagl1&allowFallback=false&maxResults=3` -> `200`, `dataSource=live_cdse`, non-zero default windows restored.
+  - `GET /api/satellite/health?userId=ivjHbhwZHmUvaZB1o2eS42oaagl1&allowFallback=true&maxResults=3` -> `200`, `dataSource=live_cdse`.
+  - `GET /api/satellite/health?userId=ivjHbhwZHmUvaZB1o2eS42oaagl1&allowFallback=false&maxCloudCover=0&maxResults=3` -> `500`, explicit failure path preserved.
+  - `GET /api/satellite/health?userId=ivjHbhwZHmUvaZB1o2eS42oaagl1&bbox=1,2,3&allowFallback=true&maxResults=3` -> `200`, invalid bbox ignored and AOI source stays `profile_land_geometry`.
+  - `npx tsc --noEmit` passed.
+  - `npm run build` passed.
+
+## 2026-02-13 13:52 IST | Day 6 / Satellite Refresh Regression Fix (Stale State Closure)
+- Summary:
+  - Fixed a client-side refresh regression on `/satellite` where manual refresh could drop into a full error card despite already loaded scan data.
+  - Root cause: `fetchSatelliteHealth` used stale `satelliteHealth` closure state during failure handling.
+  - Added `useRef`-backed latest-state tracking so live-refresh failures keep prior scan visible consistently.
+  - Hardened response parsing for non-JSON error bodies to avoid refresh-path exceptions.
+- Files:
+  - `app/satellite/page.tsx`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npm run build` passed.
+  - `npx tsc --noEmit` passed.
+  - Verified refresh failure path now retains the previous scan instead of blanking into error state when live fetch fails.
+
+## 2026-02-13 13:58 IST | Day 6 / Satellite Refresh UX Hardening (Live-First + Safe Retention)
+- Summary:
+  - Investigated `/satellite` refresh complaints where users saw fallback/error behavior despite successful route responses.
+  - Updated satellite drilldown refresh to be live-first by default (`allowFallback=false`) for manual refresh.
+  - If live refresh fails, UI now preserves the previously loaded scan and shows a non-blocking warning instead of clearing content.
+  - Added explicit `Refresh With Fallback` action so fallback sampling is user-controlled and transparent.
+- Files:
+  - `app/satellite/page.tsx`
+  - `docs/application/README.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npm run build` passed.
+  - `npx tsc --noEmit` passed.
+  - Live response check (`GET /api/satellite/health?userId=...&allowFallback=true&maxResults=3`) -> `200`.
+  - Refresh-mode code path verified: live refresh requests `allowFallback=false`; explicit fallback button requests `allowFallback=true`.
+
+## 2026-02-13 13:44 IST | Day 6 / Next Runtime Manifest Stability Hardening
+- Summary:
+  - Investigated intermittent dev runtime failures (`ENOENT` for `.next/server/app-paths-manifest.json` and `.next/routes-manifest.json`) seen while using `/satellite` and `/api/satellite/health`.
+  - Implemented artifact-path isolation so dev and production builds no longer mutate the same `.next` directory.
+  - Added TypeScript include paths for isolated Next type-generation directories.
+- Files:
+  - `package.json`
+  - `next.config.js`
+  - `tsconfig.json`
+  - `README.md`
+  - `docs/application/README.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` passed.
+  - `npm run build` passed with `NEXT_DIST_DIR=.next/build`.
+  - `npm run dev -p 3104` served `/satellite` and `/api/satellite/health` successfully.
+  - Concurrent test (`npm run build` while dev server active) kept `/satellite` and `/api/satellite/health` at `200` with no manifest ENOENT errors.
+
+## 2026-02-13 13:36 IST | Day 6 / Farm Geometry Persistence + Map-Only Profile Flow
+- Summary:
+  - Fixed farm-boundary persistence drift by removing split state between manual land inputs and map geometry.
+  - Farm Profile now uses map boundary (`location.landGeometry`) as the only land-area source; manual acreage input was removed from UI.
+  - Profile save now normalizes and persists `landSize` from geometry (`acres`) and syncs center coordinates from map boundary.
+  - `/api/farm-profile` now requires map geometry and rejects saves without boundary selection.
+  - Satellite AOI resolver now uses `query_bbox -> profile_land_geometry -> demo_fallback` (coordinate-derived AOI removed).
+- Files:
+  - `app/farm-profile/page.tsx`
+  - `components/FarmAreaSelector.tsx`
+  - `app/api/farm-profile/route.ts`
+  - `lib/services/satelliteAoiResolver.ts`
+  - `types/index.ts`
+  - `app/satellite/page.tsx`
+  - `README.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npm run build` passed.
+  - `npx tsc --noEmit` passed.
+  - `POST /api/farm-profile` with `location.landGeometry` -> `200`, persisted `landSize=58.12`, `landUnit=acres`, geometry present on subsequent GET.
+  - `POST /api/farm-profile` without `location.landGeometry` -> `400`, `Farm boundary map selection is required.`.
+  - `GET /api/satellite/health?userId=map-only-test-user&allowFallback=true&maxResults=2` -> `200`, `metadata.aoiSource=profile_land_geometry`.
+  - `GET /api/satellite/health?userId=sat-coord-user&allowFallback=true&maxResults=2` -> `200`, `metadata.aoiSource=demo_fallback`.
+  - `GET /api/satellite/health?userId=map-only-test-user&allowFallback=false&maxCloudCover=0` -> `500`, explicit no-scene error.
+
+## 2026-02-08 20:53 IST | Day 1 / Process Setup
+- Summary:
+  - Established repository-level operating rules and initial tracking baseline.
+- Files:
+  - `AGENTS.md`
+  - `docs/hackathon/ACTIVE_DAY.md` (deprecated later)
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+- Validation:
+  - Documentation-only update.
+
+## 2026-02-08 21:07 IST | Cross-Day / PRD Workflow Migration
+- Summary:
+  - Shifted workflow from `ACTIVE_DAY` model to day+phase PRD model.
+  - Created detailed PRD sheets for Day 1 to Day 6 with phase-level requirements, acceptance, risks, and enhancements.
+  - Added PRD progress tracker as the canonical execution board.
+  - Added comprehensive application-wide documentation inside `docs/application/`.
+  - Updated root agent rules to enforce PRD-driven tracking and mandatory documentation updates.
+- Files:
+  - `AGENTS.md`
+  - `docs/prd/README.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/DAY_01_CORE_PERSONALIZATION_PRD.md`
+  - `docs/prd/DAY_02_POLICY_MATCHER_SATELLITE_SETUP_PRD.md`
+  - `docs/prd/DAY_03_SATELLITE_VOICE_ASSISTANT_PRD.md`
+  - `docs/prd/DAY_04_PREDICTIVE_AI_COMMUNITY_PRD.md`
+  - `docs/prd/DAY_05_WHATSAPP_DOCUMENTS_WEATHER_PRD.md`
+  - `docs/prd/DAY_06_INTEGRATION_DASHBOARD_DEMO_PRD.md`
+  - `docs/application/COMPREHENSIVE_APPLICATION_DOCUMENTATION.md`
+  - `docs/hackathon/README.md`
+  - `docs/archive/ACTIVE_DAY_DEPRECATED.md`
+  - `README.md`
+- Validation:
+  - Manual doc consistency review completed.
+  - `find docs -maxdepth 3 -type f` verified expected structure.
+
+## 2026-02-09 00:40 IST | Day 2 / Phases 1-3 Implementation Pass
+- Summary:
+  - Implemented Day 2 scheme intelligence engine with structured catalog model, explainable eligibility scoring, duplicate-overlap detection, missing-input prompts, and recommendation generation.
+  - Added dedicated Day 2 policy matcher UX (`/schemes`) with top-priority cards, inline profile completion prompts, save-for-later flow, and document checklist interaction.
+  - Added CDSE-based satellite ingest baseline with cloud-filtered scene retrieval, normalized metadata, and history API for Day 3 handoff.
+  - Added Day 2 scripts: scheme seeding and smoke-test automation.
+  - Added explicit fallback behavior (no silent trust changes) when Firestore denies Day 2 collection writes.
+- Blockers:
+  - Current Firestore rules deny writes on `schemeCatalog`, `schemeRecommendations`, `schemeUserState`, and `satelliteHealthSnapshots`.
+- Mitigation:
+  - Seed pipeline persists catalog to fallback doc `farmProfiles/day2-catalog-seed` when `schemeCatalog` writes are denied.
+  - Recommendation API still has local in-repo Day 2 seed as last-resort fallback.
+  - Scheme save/checklist state persists under `farmProfiles.day2SchemeUserState`.
+  - Satellite snapshot metadata persists under `farmProfiles.day2SatelliteSnapshots`.
+- Files:
+  - `types/index.ts`
+  - `data/schemes/day2_seed_schemes.json`
+  - `lib/data/schemeCatalogSeed.ts`
+  - `lib/data/satelliteFallbackScenes.ts`
+  - `lib/services/schemeMatcherService.ts`
+  - `lib/services/satelliteIngestService.ts`
+  - `lib/firebase/day2.ts`
+  - `app/api/schemes/seed/route.ts`
+  - `app/api/schemes/recommendations/route.ts`
+  - `app/api/schemes/saved/route.ts`
+  - `app/api/schemes/checklist/route.ts`
+  - `app/api/satellite/ingest/route.ts`
+  - `app/schemes/page.tsx`
+  - `components/layout/Navigation.tsx`
+  - `scripts/day2_seed_schemes.mjs`
+  - `scripts/day2_smoke_test.sh`
+  - `package.json`
+  - `.env.local.example`
+  - `docs/prd/DAY_02_POLICY_MATCHER_SATELLITE_SETUP_PRD.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY2_PROGRESS_LOG.md`
+  - `docs/hackathon/README.md`
+- Validation:
+  - `npx tsc --noEmit` passed.
+  - `npm run build` passed.
+  - `bash scripts/day2_smoke_test.sh` passed.
+  - Live CDSE ingest returned 2 scenes for demo AOI and metadata persisted via fallback profile snapshot.
+
+## 2026-02-09 00:51 IST | Day 2 / Phase 1 Completion and Rules-Unblock Validation
+- Summary:
+  - Expanded Day 2 scheme seed dataset from `12` to `34` entries in `data/schemes/day2_seed_schemes.json` to satisfy PRD acceptance (`30+`).
+  - Re-ran scheme seed flow after Firestore rules update; primary `schemeCatalog` writes now succeed.
+  - Re-validated Day 2 smoke flow; recommendation, save/checklist, and satellite ingest all succeed with primary Day 2 collections active.
+- Files:
+  - `data/schemes/day2_seed_schemes.json`
+  - `docs/prd/DAY_02_POLICY_MATCHER_SATELLITE_SETUP_PRD.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY2_PROGRESS_LOG.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+- Validation:
+  - `npm run seed:day2-schemes` -> seeded `34` records into `schemeCatalog`.
+  - `bash scripts/day2_smoke_test.sh` passed.
+  - Collection counts after run: `schemeCatalog=34`, `schemeRecommendations=2`, `schemeUserState=2`, `satelliteHealthSnapshots=2`.
+
+## 2026-02-09 01:01 IST | Cross-Day / Documentation Architecture Refactor
+- Summary:
+  - Replaced monolithic application documentation workflow with modular folder-based structure for easier navigation and maintainability.
+  - Added dedicated docs modules under `docs/application/` (`overview`, `architecture`, `data`, `api`, `operations`, `governance`) and a new docs index.
+  - Converted `docs/application/COMPREHENSIVE_APPLICATION_DOCUMENTATION.md` into a legacy compatibility index that points to modular docs.
+  - Updated repository agent rules and doc references to use the new documentation entrypoint.
+- Files:
+  - `AGENTS.md`
+  - `README.md`
+  - `PROJECT_DOCUMENTATION.md`
+  - `docs/README.md`
+  - `docs/prd/README.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/application/README.md`
+  - `docs/application/COMPREHENSIVE_APPLICATION_DOCUMENTATION.md`
+  - `docs/application/overview/PRODUCT_DEFINITION.md`
+  - `docs/application/overview/SCOPE_BASELINE.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/operations/SECURITY_PRIVACY_COMPLIANCE.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/operations/RELEASE_READINESS.md`
+  - `docs/application/governance/DOCUMENTATION_GOVERNANCE.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - Manual link/path consistency review completed with repository-wide reference search.
+  - Legacy `COMPREHENSIVE_APPLICATION_DOCUMENTATION.md` path retained for backward compatibility.
+
+## 2026-02-09 01:12 IST | Cross-Day / Application Docs Depth Expansion
+- Summary:
+  - Expanded modular application docs from high-level summaries to detailed engineering references.
+  - Added explicit product framing, scope boundaries, architecture and module responsibilities, route-level API inventory, collection-level data model mapping, and ops runbooks.
+  - Added detailed environment/runtime matrix, quality strategy, release gates, and documentation governance controls.
+- Files:
+  - `docs/application/README.md`
+  - `docs/application/overview/PRODUCT_DEFINITION.md`
+  - `docs/application/overview/SCOPE_BASELINE.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/operations/SECURITY_PRIVACY_COMPLIANCE.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/operations/RELEASE_READINESS.md`
+  - `docs/application/governance/DOCUMENTATION_GOVERNANCE.md`
+  - `docs/application/CHANGELOG.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+- Validation:
+  - Manual consistency review completed against current route handlers and service layer modules.
+  - Documentation update traceability recorded in tracker + app-wide log + docs changelog.
+
+## 2026-02-09 01:14 IST | Cross-Day / Documentation Depth Enforcement Guardrails
+- Summary:
+  - Hardened future documentation quality enforcement by extending repository agent rules with a non-negotiable documentation depth standard.
+  - Added a mandatory documentation update checklist to ensure non-trivial changes are documented with implementation-level detail (contracts, data impact, runtime impact, known gaps).
+  - Linked checklist into application documentation index and governance policy for discoverability and repeatable usage.
+- Files:
+  - `AGENTS.md`
+  - `docs/application/README.md`
+  - `docs/application/governance/DOCUMENTATION_GOVERNANCE.md`
+  - `docs/application/governance/DOC_UPDATE_CHECKLIST.md`
+  - `docs/application/CHANGELOG.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+- Validation:
+  - Manual governance consistency pass completed across agent rules, application docs index, and governance module.
+  - Tracker + app-wide update + application changelog synchronized in the same session.
+
+## 2026-02-09 01:29 IST | Cross-Day / Antigravity Reusable Instructions
+- Summary:
+  - Added a lightweight reusable `ANTIGRAVITY.md` profile so future Antigravity runs need shorter prompts.
+  - Kept guidance balanced: UI-first defaults (mobile-first, minimal, implemented-feature-only) plus non-UI execution guidance.
+  - Linked profile into canonical agent/governance docs while preserving `AGENTS.md` as source-of-truth policy.
+- Files:
+  - `ANTIGRAVITY.md`
+  - `AGENTS.md`
+  - `docs/application/governance/DOCUMENTATION_GOVERNANCE.md`
+  - `docs/application/CHANGELOG.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+- Validation:
+  - Manual consistency review completed for cross-file policy references.
+  - Tracker + app-wide update + application changelog updated in the same session.
+
+## 2026-02-09 01:45 IST | Day 2 / UI Revamp
+- Summary:
+  - Executed a full UI revamp for the hackathon MVP, focusing on mobile-first, minimal design.
+  - Implemented new variable-based design tokens (Stone/Emerald) and mobile touch utilities in `app/globals.css`.
+  - Switched to mobile bottom navigation bar and simplified desktop header in `components/layout/Navigation.tsx`.
+  - Rewrote landing page (`app/page.tsx`) to be a concise MVP launcher.
+  - Optimized `app/assistant/page.tsx` for mobile viewport height and input interaction.
+  - Simplified `app/farm-profile/page.tsx` form.
+  - Redesigned `app/schemes/page.tsx` cards.
+- Files:
+  - `app/globals.css`
+  - `components/layout/Navigation.tsx`
+  - `app/page.tsx`
+  - `app/assistant/page.tsx`
+  - `app/farm-profile/page.tsx`
+  - `app/schemes/page.tsx`
+- Validation:
+  - `npm run build` passed.
+
+## 2026-02-09 10:40 IST | Day 3 / Phases 1-3 Implementation
+- Summary:
+  - Implemented Day 3 Phase 1 satellite health intelligence pipeline using Day 2 satellite ingest outputs and deterministic NDVI estimation.
+  - Added `GET|POST /api/satellite/health` with normalized score, baseline delta, stress signals, confidence, zone indicators, recommendations, and anomaly alerts.
+  - Added Day 3 voice backend:
+    - `POST /api/voice/stt` (guardrailed STT with local whisper.cpp support + explicit browser fallback)
+    - `POST /api/voice/tts` (local eSpeak support + explicit browser synthesis fallback)
+    - `POST /api/voice/roundtrip` (STT -> personalized assistant -> TTS in one flow)
+  - Refactored assistant response generation into shared service (`lib/services/assistantQueryService.ts`) so text and voice use identical personalization context and memory logging behavior.
+  - Rebuilt assistant UI voice flow to include recording state machine, transcript preview-before-send, quick presets, slow speech mode, and assistant response playback controls.
+  - Added dashboard satellite health card (summary + zone indicator + alert rendering).
+  - Added Day 3 smoke script (`scripts/day3_smoke_test.sh`) and npm alias (`smoke:day3`).
+- Blockers:
+  - Local voice binaries (`whisper-cli`, `espeak-ng`) are not installed in current environment.
+- Mitigation:
+  - Voice APIs and UI now expose fallback mode explicitly and use browser transcript/speech synthesis fallback when local binaries are unavailable.
+  - Smoke validation covers fallback behavior so degraded mode remains predictable and trustworthy.
+- Files:
+  - `app/api/satellite/health/route.ts`
+  - `lib/services/satelliteHealthService.ts`
+  - `lib/data/satelliteNdviReference.ts`
+  - `app/dashboard/page.tsx`
+  - `app/api/voice/stt/route.ts`
+  - `app/api/voice/tts/route.ts`
+  - `app/api/voice/roundtrip/route.ts`
+  - `lib/services/voiceService.ts`
+  - `lib/services/assistantQueryService.ts`
+  - `app/api/ai/query/route.ts`
+  - `app/assistant/page.tsx`
+  - `types/index.ts`
+  - `scripts/day3_smoke_test.sh`
+  - `package.json`
+  - `.env.local.example`
+  - `docs/prd/DAY_03_SATELLITE_VOICE_ASSISTANT_PRD.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY3_PROGRESS_LOG.md`
+  - `docs/application/*` Day 3 documentation updates
+  - `README.md`
+- Validation:
+  - `npx tsc --noEmit` passed.
+  - `npm run build` passed.
+  - `npm run smoke:day3` passed.
+  - `npm run smoke:day2` passed (regression check).
+
+## 2026-02-09 11:46 IST | Day 3 / Voice Multilingual Hardening
+- Summary:
+  - Completed post-Day-3 hardening for local voice runtime on development machine.
+  - Configured `.env.local` with local Whisper and TTS runtime keys (`WHISPER_CPP_BIN`, `WHISPER_CPP_MODEL`, `VOICE_*` guardrails/providers).
+  - Expanded voice language support in backend STT/TTS mapping and assistant UI language selector from 3 languages to 13 languages.
+  - Updated Day 3 smoke script to validate additional multilingual cases (Bengali STT + Tamil TTS) and fixed JSON assertion utility to handle large TTS payloads.
+- Files:
+  - `lib/services/voiceService.ts`
+  - `app/assistant/page.tsx`
+  - `scripts/day3_smoke_test.sh`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/DAY_03_SATELLITE_VOICE_ASSISTANT_PRD.md`
+  - `docs/hackathon/DAY3_PROGRESS_LOG.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+  - `README.md`
+- Validation:
+  - `npx tsc --noEmit` passed.
+  - `bash scripts/day3_smoke_test.sh` passed with `TTS provider: espeak`.
+  - Manual STT runtime check:
+    - `POST /api/voice/stt` with WAV input and `language=hi-IN` returned `provider=whisper_cpp`.
+  - Multilingual acceptance check:
+    - STT endpoint accepted all configured languages: `hi-IN`, `en-IN`, `mr-IN`, `bn-IN`, `ta-IN`, `te-IN`, `gu-IN`, `kn-IN`, `ml-IN`, `pa-IN`, `ur-IN`, `or-IN`, `as-IN`.
+
+## 2026-02-09 12:10 IST | Day 3 / UI Polish & Consistency
+- Summary:
+  - Enforced semantic design tokens (`neutral`, `primary`) across all core Day 2/3 pages (`schemes`, `farm-profile`, `dashboard`).
+  - Replaced hardcoded `stone/emerald` classes with `neutral/primary` classes to ensure full theme adaptability.
+  - Verified `app/globals.css` utility classes alignment.
+- Files:
+  - `app/schemes/page.tsx`
+  - `app/farm-profile/page.tsx`
+  - `app/dashboard/page.tsx`
+  - `app/globals.css`
+- Validation:
+  - `npm run build` passed.
+  - Smoke tests pending (dev server restart required).
+
+## 2026-02-09 18:23 IST | Cross-Day / Firebase Auth Configuration Hardening
+- Summary:
+  - Investigated signup failure (`FirebaseError: auth/configuration-not-found`) using the active Firebase web config and reproduced the backend Identity Toolkit response (`CONFIGURATION_NOT_FOUND`).
+  - Hardened client auth UX by mapping Firebase configuration/domain/app-key errors to actionable user-facing remediation steps.
+  - Added Firebase auth bring-up and troubleshooting guidance in runtime/setup docs so contributors can resolve this class of issue without code archaeology.
+- Files:
+  - `lib/firebase/auth.ts`
+  - `README.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY3_PROGRESS_LOG.md`
+  - `docs/application/CHANGELOG.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+- Validation:
+  - Identity Toolkit preflight: `POST https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri?key=<NEXT_PUBLIC_FIREBASE_API_KEY>` -> `400 CONFIGURATION_NOT_FOUND`.
+  - `npx tsc --noEmit` (post-patch) -> passed.
+
+## 2026-02-09 21:12 IST | Cross-Day / UI-Backend Contract Sync (Profile, Schemes, Community)
+- Summary:
+  - Audited frontend pages against active API contracts and fixed major drift introduced during simplified UI revamp.
+  - Expanded `Farm Profile` UI to expose the full backend-supported profile contract used for personalization and Day 2 eligibility quality (`preferredLanguage`, `irrigationType`, `waterSource`, `location.village`, `annualBudget`, `riskPreference`, `historicalChallenges`, `notes`).
+  - Reworked `Schemes` page to consume full Day 2 recommendation payload (`profileCompleteness`, `missingProfileInputs`, `catalogWarning`) and restored persistence flows for save-for-later and document checklist updates through `/api/schemes/saved` and `/api/schemes/checklist`.
+  - Fixed `Community` page request/interaction mismatches:
+    - post creation now sends required `userEmail`
+    - post likes now call `/api/community/likes` (no longer a no-op)
+    - comment fetch/create flow now renders and persists through `/api/community/comments`.
+- Files:
+  - `app/farm-profile/page.tsx`
+  - `app/schemes/page.tsx`
+  - `app/community/page.tsx`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY3_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> passed.
+  - `npm run build` -> passed (existing metadata warnings unchanged).
+  - `npm run build` -> passed (with existing Next.js metadata warnings unrelated to this patch).
+
+## 2026-02-09 21:19 IST | Day 2 / Scheme Checklist UI Readability Fix
+- Summary:
+  - Refined scheme checklist presentation in `app/schemes/page.tsx` to remove raw backend key strings and visually heavy native checkbox rows.
+  - Added document label normalization (`identity_proof` -> `Identity Proof`, etc.) with fallback formatting for unknown keys.
+  - Replaced basic checkbox rows with compact bordered checklist items, readiness counter, and inline save-state hint to improve mobile readability and touch ergonomics.
+- Files:
+  - `app/schemes/page.tsx`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY2_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> passed.
+  - `npm run build` -> passed (metadata warnings unchanged; one transient stale `.next` cache issue was mitigated by rebuilding with a fresh build output directory).
+
+## 2026-02-09 21:25 IST | Day 2 / Scheme Card Proportion Balancing
+- Summary:
+  - Tuned scheme checklist section proportions to avoid dominating card vertical space.
+  - Changed checklist item layout to responsive grid (`1` column on small screens, `2` columns on wider screens) and reduced row padding.
+  - Replaced native checkbox rendering with compact custom indicators to prevent oversized browser-dependent checkbox visuals.
+  - Retained existing checklist save contract and behavior (`/api/schemes/checklist` unchanged).
+- Files:
+  - `app/schemes/page.tsx`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY2_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> passed.
+
+## 2026-02-09 22:03 IST | Day 6 / Dashboard Satellite AOI Integration Hardening
+- Summary:
+  - Fixed profile-to-satellite UX gap by adding explicit Farm GPS inputs (latitude/longitude) in `Farm Profile`, including browser geolocation autofill (`Use Current Location`).
+  - Added coordinate validation on both client and API (`/api/farm-profile`) to prevent invalid latitude/longitude persistence.
+  - Wired dashboard satellite health requests to use farmer-specific AOI when profile coordinates exist by deriving request `bbox` from:
+    - farm center GPS coordinates
+    - saved land size + land unit
+  - Added explicit dashboard messaging to show whether satellite insight is using:
+    - farmer-specific area (profile GPS + land size), or
+    - demo fallback area (when GPS is missing/profile fetch fails).
+- Files:
+  - `app/farm-profile/page.tsx`
+  - `app/dashboard/page.tsx`
+  - `app/api/farm-profile/route.ts`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/prd/DAY_06_INTEGRATION_DASHBOARD_DEMO_PRD.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/hackathon/README.md`
+  - `docs/application/README.md`
+  - `docs/application/overview/SCOPE_BASELINE.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> passed.
+  - `npm run build` -> passed (existing metadata warnings unchanged).
+
+## 2026-02-10 08:10 IST | Cross-Day / UI-Backend Contract Drift Prevention Policy Hardening
+- Summary:
+  - Added explicit non-negotiable UI-backend contract synchronization rules to `AGENTS.md` to prevent API/UI drift.
+  - Enforced pre-implementation contract reading discipline for API-consuming UI tasks:
+    - route handlers
+    - shared types
+    - service/fetch helpers
+  - Added mandatory same-session synchronization requirement:
+    - backend contract change must update impacted UI consumers in same session
+    - deferred sync requires explicit blocker + mitigation logging
+  - Added mandatory validation evidence requirement for API-contract-touching changes:
+    - type-check + build
+    - success-path and error-path verification per changed endpoint
+  - Updated governance/checklist docs to include a formal contract sync gate so policy is auditable beyond `AGENTS.md`.
+- Files:
+  - `AGENTS.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/governance/DOCUMENTATION_GOVERNANCE.md`
+  - `docs/application/governance/DOC_UPDATE_CHECKLIST.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - Documentation/process hardening change only; no runtime code path modified.
+
+## 2026-02-13 10:09 IST | Day 6 Phase 1 / Voice Input Regression Bug-Check and Hardening
+- Summary:
+  - Investigated Hindi voice-input failure in assistant voice panel (`Speech transcription failed...`) and traced root cause to frontend recognizer shutdown sequencing.
+  - Fixed browser transcript fallback race in `app/assistant/page.tsx`:
+    - recognizer is now stopped gracefully on record-stop (not force-aborted immediately)
+    - interim transcript is retained and merged if final transcript is delayed
+    - STT request now includes merged browser transcript when available
+    - UI now surfaces explicit warning when browser speech recognition fallback is unavailable.
+  - Hardened STT backend in `lib/services/voiceService.ts`:
+    - normalized MIME validation (`audio/*;codecs=...` variations) to reduce false unsupported-type failures
+    - expanded accepted audio container compatibility (`audio/m4a`, `audio/x-m4a`, `video/mp4`)
+    - improved whisper runtime error diagnostics to report actionable cause instead of config-only message in all failures.
+  - Preserved trust behavior: fallback usage remains explicit and no silent provider switching was introduced.
+- Files:
+  - `app/assistant/page.tsx`
+  - `lib/services/voiceService.ts`
+  - `docs/prd/DAY_03_SATELLITE_VOICE_ASSISTANT_PRD.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `npm run build` -> pass (existing Next metadata warnings unchanged).
+  - `POST /api/voice/stt` success path (Hindi transcript fallback) -> `200`, `provider=browser_fallback`.
+  - `POST /api/voice/stt` success path (WAV audio, no transcript fallback) -> `200`, `provider=whisper_cpp`.
+  - `POST /api/voice/stt` error path (missing audio+transcript) -> `400`.
+  - `POST /api/voice/roundtrip` success path -> `200`, transcript + answer + TTS payload returned.
+  - `POST /api/voice/roundtrip` error path (missing audio+transcript) -> `400`.
+- Checklist notes:
+  - Root `README.md` intentionally not updated because setup/env/command/structure did not change in this patch.
+
+## 2026-02-13 10:23 IST | Day 6 Phase 1 / Voice Runtime Container + Multilingual Fallback Hardening
+- Summary:
+  - Reproduced and isolated persistent STT failure after previous patch: local `whisper-cli` supports only `wav/ogg/mp3/flac`, while browser recordings can arrive as `webm`/`m4a` and were returning exit `0` without transcript output.
+  - Added server-side preprocessing in `lib/services/voiceService.ts`:
+    - non-native whisper containers are auto-converted to WAV using ffmpeg before transcription
+    - unsupported whisper language-code failures now auto-retry with `language=auto` and return explicit fallback metadata.
+  - Added MIME acceptance for `video/webm` and `video/ogg` container variants to prevent false unsupported-type rejections.
+  - Reduced frontend failure probability by preferring OGG recording when browser supports it.
+  - Extended runtime/docs metadata to include optional `VOICE_FFMPEG_BIN` configuration.
+- Files:
+  - `lib/services/voiceService.ts`
+  - `app/assistant/page.tsx`
+  - `.env.local.example`
+  - `README.md`
+  - `scripts/day3_smoke_test.sh`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/prd/DAY_03_SATELLITE_VOICE_ASSISTANT_PRD.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `npm run build` -> pass (existing Next metadata warnings unchanged).
+  - `POST /api/voice/stt` with WebM audio (`video/webm`) and no transcript fallback -> `200`, `provider=whisper_cpp`.
+  - `POST /api/voice/stt` with M4A audio (`audio/x-m4a`) and no transcript fallback -> `200`, `provider=whisper_cpp`.
+  - Multilingual STT sweep with WebM audio across all configured languages -> all `200`; `or-IN` returns `languageUsed=auto` with explicit fallback reason.
+  - `POST /api/voice/roundtrip` with WebM audio + `language=or-IN` -> `200`, warning includes auto-language fallback note.
+  - `POST /api/voice/stt` missing audio+transcript -> `400`.
+- Checklist notes:
+  - Root `README.md` updated because runtime prerequisites/env keys changed (`ffmpeg` + `VOICE_FFMPEG_BIN`).
+
+## 2026-02-13 10:38 IST | Day 6 Phase 1 / Bengali Script Output Normalization Hardening
+- Summary:
+  - Investigated user report where Bengali voice query (`ami dhanchas korte chai`) was transcribed in Devanagari script despite Bengali language selection.
+  - Added transcript script post-processing in `lib/services/voiceService.ts`:
+    - detects Devanagari-heavy transcripts for non-Devanagari requested Indic languages
+    - transliterates Devanagari output into requested script block (for supported Indic scripts)
+    - appends explicit note in STT fallback reason when script normalization is applied.
+  - Updated assistant UI warning behavior:
+    - removed misleading warning for expected locale normalization (`bn-IN` -> `bn`)
+    - changed warning prefix to `STT note:` for script-normalization messages.
+  - Scope applies to configured Indic language set behavior, not Hindi-only.
+- Files:
+  - `lib/services/voiceService.ts`
+  - `app/assistant/page.tsx`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/prd/DAY_03_SATELLITE_VOICE_ASSISTANT_PRD.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `npm run build` -> pass (existing metadata warnings unchanged).
+  - `POST /api/voice/stt` with `language=bn-IN` + Devanagari transcript fallback -> `200`, transcript returned in Bengali script with explicit script-normalization note.
+  - `POST /api/voice/stt` with `language=hi-IN` + Devanagari transcript fallback -> `200`, transcript preserved in Devanagari (no cross-language over-normalization).
+  - `POST /api/voice/stt` with Bengali + WebM audio -> `200`, whisper path plus script-normalization note when output script mismatches request.
+
+## 2026-02-13 10:46 IST | Day 6 Phase 1 / Voice TTS Length-Limit Failure Hardening
+- Summary:
+  - Investigated user report where a short spoken query still resulted in `Text is too long for speech synthesis (max 1600 characters).`.
+  - Root cause: TTS length check evaluated generated AI answer text length (not user transcript length) and returned a hard failure, which blocked voice roundtrip.
+  - Fixed `lib/services/voiceService.ts` to degrade gracefully for long responses:
+    - when response text exceeds server TTS limit, return `success=true` with `provider=browser_speech_fallback`
+    - include explicit fallback reason rather than surfacing a hard error.
+  - Updated STT script-note wording to be user-neutral (`Transcript display adjusted ...`) and kept UI prefixing as `STT note` for clarity.
+- Files:
+  - `lib/services/voiceService.ts`
+  - `app/assistant/page.tsx`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/prd/DAY_03_SATELLITE_VOICE_ASSISTANT_PRD.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `npm run build` -> pass (existing metadata warnings unchanged).
+  - `POST /api/voice/tts` with text length `1705` -> `200`, `provider=browser_speech_fallback`, explicit length-limit fallback reason.
+  - `POST /api/voice/stt` with `language=bn-IN` + Devanagari fallback text -> `200`, Bengali transcript and neutral script-adjustment wording.
+
+## 2026-02-13 11:06 IST | Day 6 Phase 1 / Assistant Dev Manifest Stability + Multilingual Voice Regression Sweep
+- Summary:
+  - Investigated repeated dev-runtime error on `/assistant`:
+    - `Could not find ... segment-explorer-node.js#SegmentViewNode in the React Client Manifest`.
+  - Root cause:
+    - Next.js 15 dev-only Segment Explorer path (`experimental.devtoolSegmentExplorer`) triggered a React Client Manifest mismatch in this runtime.
+  - Fix implemented:
+    - disabled Segment Explorer in `next.config.js` (`experimental.devtoolSegmentExplorer=false`) to remove unstable dev-only manifest path.
+    - resolved Next metadata warnings by moving `viewport` and `themeColor` from `metadata` export to `viewport` export in `app/layout.tsx`.
+  - Regression hardening:
+    - re-ran Day 3 smoke flow and executed explicit all-language voice sweeps to verify no breakage to multilingual STT/TTS roundtrip behavior.
+- Files:
+  - `next.config.js`
+  - `app/layout.tsx`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `npm run build` -> pass.
+  - Dev runtime verification (`PORT=3100 npm run dev` + `GET /assistant`) -> `200`; no `SegmentViewNode` manifest errors and no metadata `viewport/themeColor` warnings in server log.
+  - `bash scripts/day3_smoke_test.sh` -> pass.
+  - Multilingual STT fallback sweep (`hi-IN`, `en-IN`, `mr-IN`, `bn-IN`, `ta-IN`, `te-IN`, `gu-IN`, `kn-IN`, `ml-IN`, `pa-IN`, `ur-IN`, `or-IN`, `as-IN`) -> all `200` (`provider=browser_fallback`, `languageUsed` normalized per language).
+  - Multilingual voice roundtrip sweep across same language set (`language=ttsLanguage`, browser transcript fallback) -> all `200` (`sttProvider=browser_fallback`, `tts.provider=espeak`, warnings present on each response).
+- Checklist notes:
+  - Root `README.md` intentionally not updated; setup/env/commands/structure were unchanged in this patch.
+
+## 2026-02-13 11:35 IST | Day 6 Phase 1 / Assistant Multilingual Response System Hardening
+- Summary:
+  - Investigated text-assistant behavior where Bengali user prompts returned an English-only redirection message.
+  - Root cause:
+    - assistant system prompt in `lib/ai/gemini.ts` explicitly constrained responses to "VERY SIMPLE ENGLISH".
+  - Fix implemented:
+    - replaced English-only prompt policy with same-language response policy (match farmer query language).
+    - added language targeting support in assistant generation:
+      - script/romanized query inference for multilingual text turns
+      - optional explicit language hint from `/api/ai/query` payload (`language`)
+      - voice-roundtrip propagation of selected language hint into assistant query layer.
+    - added one-shot correction retry when model output asks user to switch to English for non-English target language.
+  - Scope note:
+    - as requested, this patch focuses on multilingual assistant response behavior, not further voice transcription accuracy tuning.
+- Files:
+  - `lib/ai/gemini.ts`
+  - `lib/services/assistantQueryService.ts`
+  - `app/api/ai/query/route.ts`
+  - `app/api/voice/roundtrip/route.ts`
+  - `types/index.ts`
+  - `README.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `npm run build` -> pass.
+  - `POST /api/ai/query` with Bengali-script query (`আমি ধানচাষ করতে চাই। এখন কী করব?`) -> `200`, Bengali response.
+  - `POST /api/ai/query` with romanized Bengali query (`ami dhanchas korte chai, ekhon ki korbo?`) -> `200`, non-English response (no English-only redirect text).
+  - `POST /api/ai/query` with explicit `language=bn-IN` and English question -> `200`, Bengali response.
+  - `POST /api/voice/roundtrip` with `language=bn-IN`, `ttsLanguage=bn-IN`, `browserTranscript=ami dhanchas korte chai` -> `200`, assistant response without English-switch instruction.
+  - `bash scripts/day3_smoke_test.sh` -> pass.
+- Checklist notes:
+  - Root `README.md` updated because current assistant behavior description changed (English-only description was no longer accurate).
+
+## 2026-02-13 11:43 IST | Day 6 Phase 1 / Assistant Query Timeout Reliability Hardening
+- Summary:
+  - Investigated `/api/ai/query` failure after multilingual patch where simple user prompt (`ami dhan chas korte chai , help korun plz`) returned `500` due `AbortError` timeout from Ollama fetch.
+  - Root cause:
+    - first-pass Ollama request timeout budget was too strict for occasional model warmup/latency spikes, and timeout on correction-pass could discard an already valid first draft.
+  - Fix implemented in `lib/ai/gemini.ts`:
+    - increased first-pass timeout budget for local Ollama generate call.
+    - added timeout-aware second attempt using lean prompt context (reduced conversation/farm-memory lines) when first attempt times out.
+    - made language-correction pass timeout non-fatal so first successful answer is preserved.
+    - added centralized timeout-like error detection (`AbortError` / timeout variants) for stable handling.
+- Files:
+  - `lib/ai/gemini.ts`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `npm run build` -> pass.
+  - Repro check: `POST /api/ai/query` with `question=\"ami dhan chas korte chai , help korun plz\"` -> `200`, answer returned.
+  - Dev log check for same repro -> no `AbortError`, no `Request timed out`.
+
+## 2026-02-13 12:03 IST | Day 6 Phase 1 / Assistant Session Isolation + English Response Stability Hardening
+- Summary:
+  - Investigated report where English text queries were answered in Bengali and some assistant replies ended mid-sentence.
+  - Root causes identified:
+    - frontend `New Session` flow cleared visible chat but reused the same backend `sessionId`, allowing prior-language conversation context to leak.
+    - assistant language inference had no English fallback for Latin-script inputs without explicit language hints.
+    - completion quality depended only on Ollama `done_reason=length`; some cut-off drafts were not flagged as length-limited.
+  - Fix implemented:
+    - `app/assistant/page.tsx`: `New Session` now generates a fresh `sessionId` and resets response meta.
+    - `lib/ai/gemini.ts`:
+      - added English fallback inference for Latin-script queries when explicit hint is absent
+      - added English-target correction retry if model output drifts into non-Latin script
+      - added truncation-tail heuristic + one-shot continuation merge for incomplete responses
+      - added concise-answer instruction to reduce long unbounded drafts.
+- Files:
+  - `app/assistant/page.tsx`
+  - `lib/ai/gemini.ts`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `npm run build` -> pass.
+  - `POST /api/ai/query` with `question=\"i need to farm wheat help me\"` -> `200`, `NON_LATIN=no` (English-script response).
+  - `POST /api/ai/query` with same English question -> completion check `ENDS_CLEAN=yes` (response ends with final punctuation).
+  - `POST /api/ai/query` with explicit `language=bn-IN` and English input -> `200`, Bengali-script response retained by explicit language hint path.
+  - `POST /api/ai/query` with body `{}` -> `400`, `Question is required and must be a string`.
+- Checklist notes:
+  - Root `README.md` intentionally not updated; setup/env/commands/structure were unchanged in this patch.
+
+## 2026-02-13 12:20 IST | Day 6 Phase 1 / Assistant Provider Toggle (Ollama + Gemini) Hardening
+- Summary:
+  - Implemented end-to-end assistant provider toggle so chatbot can use either Local LLM (`ollama`) or Gemini (`gemini`) without breaking existing local-first flow.
+  - Added UI-level toggle in assistant page and propagated provider through both text and voice routes:
+    - `/api/ai/query` now accepts optional `provider`
+    - `/api/voice/roundtrip` now accepts optional `assistantProvider`
+  - Added strict provider contract validation in assistant service:
+    - invalid provider values now return deterministic `400` (`Unsupported provider. Use 'ollama' or 'gemini'.`)
+    - no silent provider fallback for explicit invalid selections.
+  - Added Gemini assistant runtime implementation in `lib/ai/gemini.ts`:
+    - assistant-provider routing (`ollama` default, `gemini` explicit)
+    - Gemini model candidate fallback chain (`GEMINI_ASSISTANT_MODEL`, `GEMINI_MODEL`, defaults)
+    - normalized actionable error mapping for missing key, auth/key issues, unsupported model, and quota exhaustion.
+  - Added SSR-safety fix needed to keep release validation stable:
+    - `app/farm-profile/page.tsx` now loads Leaflet-based `FarmAreaSelector` via dynamic import with `ssr:false` to avoid `window is not defined` prerender failure.
+- Files:
+  - `app/assistant/page.tsx`
+  - `app/api/ai/query/route.ts`
+  - `app/api/voice/roundtrip/route.ts`
+  - `lib/services/assistantQueryService.ts`
+  - `lib/ai/gemini.ts`
+  - `lib/firebase/firestore.ts`
+  - `types/index.ts`
+  - `app/farm-profile/page.tsx`
+  - `.env.local.example`
+  - `README.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `npm run build` -> pass.
+  - `POST /api/ai/query` success path (`provider=ollama`) -> `200`, `meta.provider=ollama`.
+  - `POST /api/ai/query` validation/error paths:
+    - invalid provider (`provider=abc`) -> `400`, unsupported provider error
+    - missing question (`{}`) -> `400`, question validation error
+    - Gemini selected in key-enabled runtime (`provider=gemini`) -> `500`, actionable quota error (`Gemini request quota exceeded...`).
+  - `POST /api/voice/roundtrip` success path (`assistantProvider=ollama`, transcript fallback) -> `200`, `answerMeta.provider=ollama`.
+  - `POST /api/voice/roundtrip` validation/error paths:
+    - invalid provider (`assistantProvider=abc`) -> `400`, unsupported provider error
+    - missing audio+transcript -> `400` validation error
+    - Gemini selected in key-enabled runtime (`assistantProvider=gemini`) -> `500`, actionable quota error (`Gemini request quota exceeded...`).
+  - Gemini runtime compatibility check (isolated dev run with runtime key injection):
+    - model fallback moved request path from unsupported `gemini-1.5-flash` to `gemini-2.0-flash`
+    - current shared key was quota-blocked (`429`) in this environment, and API now returns actionable quota guidance instead of opaque SDK stack text.
+- Checklist notes:
+  - Root `README.md` updated because assistant feature behavior and env guidance changed (`Gemini` assistant toggle + `GEMINI_ASSISTANT_MODEL`).
+
+## 2026-02-13 13:58 IST | Day 6 / Phase 1 Interactive Satellite Overlay Delivery
+- Summary:
+  - Implemented geometry-driven interactive satellite visualization with honest zone overlays and explicit trust messaging.
+  - Added shared AOI resolver used by both satellite endpoints to prevent backend contract drift (`query_bbox` -> `profile_land_geometry` -> `profile_coordinates_derived` -> `demo_fallback`).
+  - Extended `/api/satellite/health` payload with `mapOverlay` (farm boundary, zone polygons, legend, disclaimer) and metadata (`aoiSource`, `geometryUsed`).
+  - Added reusable map component + full drilldown page (`/satellite`) and upgraded dashboard card with mini-map + manual refresh + source-specific coverage note.
+  - Fixed Firestore parcel-geometry persistence compatibility by serializing polygon coordinate arrays on write and rehydrating on read.
+- Files:
+  - `lib/services/satelliteAoiResolver.ts`
+  - `app/api/satellite/health/route.ts`
+  - `app/api/satellite/ingest/route.ts`
+  - `lib/services/satelliteHealthService.ts`
+  - `components/SatelliteHealthMap.tsx`
+  - `app/dashboard/page.tsx`
+  - `app/satellite/page.tsx`
+  - `lib/firebase/firestore.ts`
+  - `types/index.ts`
+  - `README.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` passed.
+  - `npm run build` passed.
+  - `GET /api/satellite/health?userId=sat-geo-user&allowFallback=true&maxResults=2` -> `200`, `metadata.aoiSource=profile_land_geometry`, `health.mapOverlay.strategy=estimated_zones`.
+  - `GET /api/satellite/ingest?userId=sat-geo-user&allowFallback=true&maxResults=2` -> `200`, AOI bbox matches saved geometry.
+  - `GET /api/satellite/health?userId=sat-coord-user&allowFallback=true&maxResults=2` -> `200`, `metadata.aoiSource=profile_coordinates_derived`.
+  - `GET /api/satellite/health?userId=sat-geo-user&allowFallback=false&maxCloudCover=0` -> `500`, explicit no-fallback failure.
+  - `GET /api/satellite/health?userId=sat-geo-user&bbox=1,2,3&allowFallback=true` -> `200`, invalid bbox ignored and resolver source remains profile geometry.
+
+## 2026-02-13 14:18 IST | Day 6 / Satellite UX Consolidation (Dedicated Page + Navigation)
+- Summary:
+  - Moved satellite analysis interaction out of dashboard into dedicated `/satellite` page as the primary analysis surface.
+  - Added `/satellite` to top and bottom navbar navigation and to footer Tools links for direct discoverability.
+  - Simplified dashboard satellite section to a lightweight entry card with CTA to `/satellite`.
+  - Retained existing backend AOI resolver + overlay contracts; change is UX-navigation level, not API-shape change.
+- Files:
+  - `components/layout/Navigation.tsx`
+  - `components/layout/Footer.tsx`
+  - `app/dashboard/page.tsx`
+  - `README.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/overview/SCOPE_BASELINE.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` passed.
+  - `npm run build` passed.
+  - `GET /satellite` returned `200` on active dev runtime.
+
+## 2026-02-13 IST | Cross-Day / Gemini to Groq API Migration
+- Summary:
+  - Replaced all Gemini API integrations with Groq API using llama-3.3-70b-versatile model.
+  - Updated core AI module from `lib/ai/gemini.ts` to `lib/ai/groq.ts` with Groq SDK.
+  - Changed provider type from 'gemini' to 'groq' across all types, services, and UI components.
+  - Updated service layer imports in `assistantQueryService.ts` and `cropPlanningService.ts`.
+  - Updated health check route to use Groq module.
+  - Modified UI provider options and warning messages in `app/assistant/page.tsx`.
+  - Removed @google/generative-ai dependency, added groq-sdk v0.12.0.
+  - Updated environment variables: GROQ_API_KEY and GROQ_MODEL in .env.local.example.
+  - Deleted obsolete `lib/ai/gemini.ts` file.
+- Files:
+  - `lib/ai/groq.ts` (new)
+  - `lib/ai/gemini.ts` (deleted)
+  - `lib/services/assistantQueryService.ts`
+  - `lib/services/cropPlanningService.ts`
+  - `app/api/ai/health/route.ts`
+  - `app/assistant/page.tsx`
+  - `types/index.ts`
+  - `.env.local.example`
+  - `package.json`
+  - `package-lock.json`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` passed (no TypeScript errors).
+  - `npm run build` passed (production build successful).
+  - All provider references updated from 'gemini' to 'groq'.
+  - API key configured for llama-3.3-70b-versatile model.
+
+## 2026-02-13 15:26 IST | Day 6 Phase 1 / Satellite Right-Panel Data Consistency + Color Labels
+- Summary:
+  - Fixed trust/UI consistency gap where high-accuracy raster mode could still show a metadata-estimation uncertainty note.
+  - Added explicit color labels in right-side panel so users can quickly understand what map colors mean.
+  - Improved map legend readability by moving it away from Leaflet zoom controls and adding clearer legend headings.
+- What changed:
+  - `app/api/satellite/health/route.ts`
+    - Added raster-mode uncertainty-note normalization (`normalizeHealthPresentation`) so `mapOverlay.strategy=ndvi_raster` always shows raster-accurate uncertainty language.
+    - Applied normalization to both live responses and cached/stale-cache responses to prevent stale note drift.
+  - `app/satellite/page.tsx`
+    - Added scan mode label in timestamp card (`High-accuracy NDVI raster` vs `Estimated zone overlay`).
+    - Added `Color Labels` card showing zone score colors and NDVI raster color meanings.
+  - `components/SatelliteHealthMap.tsx`
+    - Legend moved from top-left to top-right to avoid clipping/overlap with zoom controls.
+    - Added compact legend headers and raster color hint text.
+- Files:
+  - `app/api/satellite/health/route.ts`
+  - `app/satellite/page.tsx`
+  - `components/SatelliteHealthMap.tsx`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `GET /api/satellite/health?userId=ivjHbhwZHmUvaZB1o2eS42oaagl1&allowFallback=true&precisionMode=high_accuracy&useCache=false&forceRefresh=true&maxCloudCover=34&maxResults=3` -> `200`, `mapOverlay.strategy=ndvi_raster`, uncertainty note now states raster basis and does not contain metadata-estimation wording.
+
+## 2026-02-13 15:12 IST | Day 6 Phase 1 / High-Accuracy Satellite Map + 24h DB Cache + True Satellite Timestamp
+- Summary:
+  - Implemented high-accuracy satellite mode on `GET /api/satellite/health` with NDVI raster overlay enrichment from CDSE Process API.
+  - Added deterministic 24-hour persistent cache flow to reduce repeated live API quota usage:
+    - primary storage: `satelliteHealthCache`
+    - fallback storage when collection writes are blocked: `farmProfiles.{userId}.day6SatelliteHealthCache`.
+  - Added cache and source-scene metadata contracts so UI can show true capture time and cache-hit status:
+    - `metadata.sourceScene` (`sceneId`, `capturedAt`)
+    - `metadata.cache` (`hit`, `key`, `expiresAt`, `forced`, `staleFallbackUsed`)
+    - `metadata.precisionMode`.
+  - Added explicit degraded behavior in high-accuracy mode:
+    - when Process API fails, response stays `200` with estimated overlay (`strategy=estimated_zones`)
+    - `health.highAccuracyUnavailableReason` is returned for trust-safe messaging.
+  - Updated `/satellite` UI actions:
+    - `Refresh Scan`: cached high-accuracy request
+    - `Force Live Check`: bypass cache with `forceRefresh=true`
+    - `Refresh With Fallback`: forced refresh with `allowFallback=true`.
+  - Added satellite-side freshness UI fields:
+    - `Satellite Captured` from scene timestamp
+    - `Data Age` derived from capture time, not client refresh time.
+- Files:
+  - `types/index.ts`
+  - `lib/services/cdseClient.ts` (new)
+  - `lib/services/satelliteIngestService.ts`
+  - `lib/services/satelliteNdviProcessService.ts` (new)
+  - `lib/firebase/satelliteHealthCache.ts` (new)
+  - `app/api/satellite/health/route.ts`
+  - `components/SatelliteHealthMap.tsx`
+  - `app/satellite/page.tsx`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/CHANGELOG.md`
+- Validation:
+  - `npx tsc --noEmit` -> pass.
+  - `npm run build` -> pass.
+  - `GET /api/satellite/health?...&precisionMode=high_accuracy&useCache=true&forceRefresh=false&maxCloudCover=34&maxResults=7` (first call) -> `200`, `cache.hit=false`, `mapOverlay.strategy=ndvi_raster`.
+  - Same request (second call) -> `200`, `cache.hit=true`.
+  - Same request with `forceRefresh=true` -> `200`, `cache.hit=false`, `cache.forced=true`.
+  - `GET /api/satellite/health?...&simulateNdviFailure=true&useCache=false&forceRefresh=true` -> `200`, `mapOverlay.strategy=estimated_zones`, `highAccuracyUnavailableReason` present.
+  - `GET /api/satellite/health?...&allowFallback=false&maxCloudCover=0&useCache=false&forceRefresh=true` -> `500`, explicit no-scene failure.
+  - `GET /api/satellite/health?...&bbox=1,2,3` -> `200`, invalid bbox ignored and normal AOI resolution retained.
+- Checklist notes:
+  - Root `README.md` intentionally not updated in this patch because setup/env/command surface did not change.

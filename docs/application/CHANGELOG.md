@@ -1,0 +1,400 @@
+# Application Docs Changelog
+
+## 2026-02-13
+
+### Satellite Right-Panel Consistency + Color Labels
+- **Summary**: Aligned right-side satellite cards with map mode and added explicit color interpretation labels for faster, clearer reading during demo.
+- **Changes**:
+  - `app/api/satellite/health/route.ts` now normalizes raster-mode uncertainty note text for both live and cache-hit responses.
+  - `app/satellite/page.tsx` now shows:
+    - scan mode label (`High-accuracy NDVI raster` or `Estimated zone overlay`)
+    - `Color Labels` card (zone score colors + NDVI raster colors).
+  - `components/SatelliteHealthMap.tsx` legend moved to top-right with headings to avoid overlap with zoom controls.
+- **Interface/Contracts**:
+  - No request/response shape change.
+  - Response presentation semantics are now strategy-consistent (`ndvi_raster` -> raster wording).
+- **Runtime/Ops Impact**:
+  - Improves operator trust/readability without changing quota behavior.
+- **Updated Docs**:
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+- **Validation**:
+  - `npx tsc --noEmit`: passed
+  - `GET /api/satellite/health?...precisionMode=high_accuracy&useCache=false&forceRefresh=true` -> `200`, `mapOverlay.strategy=ndvi_raster`, uncertainty note references raster basis and no metadata-estimation wording.
+
+### High-Accuracy Satellite Map + 24h Cache + True Scene Timestamp
+- **Summary**: Added high-accuracy NDVI raster rendering path, persistent 24h cache behavior, and scene-capture timestamp metadata/UI wiring for `/api/satellite/health` and `/satellite`.
+- **Changes**:
+  - Added `precisionMode`, `useCache`, `forceRefresh`, and `cacheTtlHours` query behavior in `app/api/satellite/health/route.ts`.
+  - Added Process API NDVI renderer (`lib/services/satelliteNdviProcessService.ts`) and shared CDSE token helper (`lib/services/cdseClient.ts`).
+  - Added persistent cache service (`lib/firebase/satelliteHealthCache.ts`) with fallback storage in `farmProfiles.{userId}.day6SatelliteHealthCache`.
+  - Extended response metadata with:
+    - `metadata.sourceScene` (`sceneId`, `capturedAt`)
+    - `metadata.cache` (`hit`, `key`, `expiresAt`, `forced`, `staleFallbackUsed`)
+    - `metadata.precisionMode`.
+  - Extended map overlay support:
+    - `strategy='ndvi_raster'` with `imageDataUrl` + `imageBbox`
+    - explicit high-accuracy degrade reason via `health.highAccuracyUnavailableReason`.
+  - Updated `/satellite` UI with cache-aware refresh controls:
+    - `Refresh Scan` (cached mode)
+    - `Force Live Check`
+    - `Refresh With Fallback`
+    - `Satellite Captured` + `Data Age` rendered from scene metadata.
+- **Interface/Contracts**:
+  - Satellite health response now carries explicit cache diagnostics and source-scene timestamp contract for frontend.
+  - High-accuracy mode degrades to estimated overlay with explicit warning, while preserving `200` response shape.
+- **Data Impact**:
+  - New cache collection `satelliteHealthCache`.
+  - Profile fallback field `day6SatelliteHealthCache` for permission-blocked environments.
+  - Cache payload and metadata are JSON-serialized on write to avoid Firestore nested-array failures.
+- **Runtime/Ops Impact**:
+  - Repeated same-key requests inside TTL can skip live ingest/process calls (quota reduction path).
+  - `forceRefresh=true` intentionally bypasses cache and consumes live quota.
+- **Updated Docs**:
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+- **Validation**:
+  - `npx tsc --noEmit`: passed
+  - `npm run build`: passed
+  - Health cache matrix:
+    - first call -> `cache.hit=false`
+    - second call (same key) -> `cache.hit=true`
+    - force refresh -> `cache.forced=true`, `cache.hit=false`
+  - Simulated high-accuracy failure (`simulateNdviFailure=true`) -> `200`, estimated overlay + explicit reason.
+  - Strict no-fallback error path (`allowFallback=false&maxCloudCover=0`) -> `500` explicit failure.
+  - Invalid bbox resilience (`bbox=1,2,3`) -> `200` and normal AOI resolution.
+
+### Satellite Health Default-Parameter Parsing Fix
+- **Summary**: Fixed `/api/satellite/health` query parsing bug that forced unintended fallback behavior.
+- **Changes**:
+  - `app/api/satellite/health/route.ts` now treats missing/blank numeric query params as defaults instead of coercing them to `0`.
+  - Restored intended defaults for `maxCloudCover`, `maxResults`, and analysis windows when params are omitted.
+- **Interface/Contracts**:
+  - No response shape change.
+  - Runtime behavior corrected for omitted query params.
+- **Runtime/Ops Impact**:
+  - Reduced false fallback/sample responses for healthy live-CDSE requests.
+- **Updated Docs**:
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+- **Validation**:
+  - `GET /api/satellite/health?userId=...&allowFallback=false&maxResults=3` -> `200`, `dataSource=live_cdse`
+  - `GET /api/satellite/health?userId=...&allowFallback=false&maxCloudCover=0` -> `500` explicit no-scene failure
+  - `npx tsc --noEmit`: passed
+  - `npm run build`: passed
+
+### Satellite Refresh Regression Fix (Stale State Closure)
+- **Summary**: Fixed a client-side state bug that could still show a full error card on `/satellite` refresh even when a prior scan was available.
+- **Changes**:
+  - `app/satellite/page.tsx` now tracks latest scan via `useRef` for refresh failure handling.
+  - Manual refresh failure path now reliably keeps existing map/insight visible.
+  - Added safer response parsing for non-JSON route failures during refresh.
+- **Interface/Contracts**:
+  - No API contract changes.
+- **Runtime/Ops Impact**:
+  - Improved resilience of manual refresh UX under transient live-source failures.
+- **Updated Docs**:
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+- **Validation**:
+  - `npm run build`: passed
+  - `npx tsc --noEmit`: passed
+
+### Satellite Refresh UX Hardening (Live-First + Safe Retention)
+- **Summary**: Improved `/satellite` manual refresh behavior so users do not lose working data when live ingest is temporarily unavailable.
+- **Changes**:
+  - `app/satellite/page.tsx` now uses live-only refresh for `Refresh Scan` (`allowFallback=false`).
+  - On live-refresh failure, page now keeps existing scan visible and shows warning notice instead of switching to blank/error state.
+  - Added explicit `Refresh With Fallback` action (`allowFallback=true`) for user-controlled sample fallback.
+  - Added data-source banner clarity for fallback sample responses.
+- **Interface/Contracts**:
+  - No API contract changes; frontend request behavior is now explicit by action type.
+- **Runtime/Ops Impact**:
+  - Better trust behavior under transient live-source failures.
+  - Reduced perceived instability when fallback data is returned.
+- **Updated Docs**:
+  - `docs/application/README.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+- **Validation**:
+  - `npx tsc --noEmit`: passed
+  - `npm run build`: passed
+  - Manual route checks confirmed healthy `200` responses while preserving refresh UX behavior separation (`allowFallback=false` vs `allowFallback=true`).
+
+## 2026-02-13
+
+### Next.js Dev/Build Manifest Collision Hardening
+- **Summary**: Prevented intermittent `.next` manifest `ENOENT` runtime failures during parallel dev/build activity.
+- **Changes**:
+  - `package.json` scripts now isolate output directories:
+    - `npm run dev` -> `NEXT_DIST_DIR=.next/dev`
+    - `npm run build` + `npm run start` -> `NEXT_DIST_DIR=.next/build`
+  - `next.config.js` now uses `distDir` from `NEXT_DIST_DIR`.
+  - `tsconfig.json` now includes isolated Next type directories:
+    - `.next/dev/types/**/*.ts`
+    - `.next/build/types/**/*.ts`
+- **Interface/Contracts**:
+  - No API contract changes.
+  - Runtime command behavior remains `npm run dev|build|start`, with internal artifact isolation.
+- **Runtime/Ops Impact**:
+  - Reduces risk of dev-server crash when build command runs concurrently.
+  - Prevents missing-manifest errors for routes like `/satellite` and `/api/satellite/health` caused by shared `.next` mutations.
+- **Updated Docs**:
+  - `README.md`
+  - `docs/application/README.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+- **Validation**:
+  - `npx tsc --noEmit`: passed
+  - `npm run build`: passed
+  - Concurrent stability check (`dev` serving routes while `build` runs) completed without manifest ENOENT failures.
+
+## 2026-02-13
+
+### Farm Profile Map-Only Area Persistence Hardening
+- **Summary**: Unified farm area capture to map-boundary-only flow and removed coordinate-derived satellite AOI path.
+- **Changes**:
+  - `app/farm-profile/page.tsx` now treats `location.landGeometry` as the single source of land area.
+  - Removed manual land-size/unit input controls from profile UI; land area is displayed as map-derived read-only.
+  - `components/FarmAreaSelector.tsx` removed manual-area comparison props and now safely handles existing closed polygon rings.
+  - `app/api/farm-profile/route.ts` now requires map geometry and normalizes persisted `landSize`/`coordinates` from geometry center.
+  - `lib/services/satelliteAoiResolver.ts` precedence updated to `query_bbox -> profile_land_geometry -> demo_fallback`.
+  - `types/index.ts` `SatelliteAoiSource` removed `profile_coordinates_derived`.
+- **Interface/Contracts**:
+  - `/api/farm-profile` now returns `400` if `location.landGeometry` is missing.
+  - Saved profile `landSize` is always map-derived acres in this flow.
+  - `/api/satellite/health` and `/api/satellite/ingest` no longer use coordinate-derived AOI in resolver path.
+- **Data Impact**:
+  - `farmProfiles/{userId}` writes now consistently persist geometry-derived center coordinates and area.
+  - Existing coord-only profiles still read, but satellite AOI resolves to `demo_fallback` unless geometry exists.
+- **Runtime/Ops Impact**:
+  - No new dependencies.
+  - Existing validations remain explicit; no silent fallback introduced.
+- **Updated Docs**:
+  - `README.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY6_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+- **Validation**:
+  - `npm run build`: passed
+  - `npx tsc --noEmit`: passed
+  - Manual API checks completed for farm-profile success/error and satellite health success/fallback/error paths.
+
+## 2026-02-13
+
+### AI Provider Migration: Gemini → Groq
+- **Summary**: Completely replaced Google Gemini API with Groq API using llama-3.3-70b-versatile model
+- **Changes**:
+  - Created new `lib/ai/groq.ts` module with Groq SDK integration
+  - Deleted obsolete `lib/ai/gemini.ts` module
+  - Updated `AssistantModelProvider` type from `'ollama' | 'gemini'` to `'ollama' | 'groq'`
+  - Migrated all service imports from `@/lib/ai/gemini` to `@/lib/ai/groq`
+  - Updated provider validation in `assistantQueryService.ts` to accept 'groq'
+  - Updated UI provider options in `app/assistant/page.tsx` (label: 'Groq API', warning message for GROQ_API_KEY)
+  - Replaced npm dependency `@google/generative-ai` with `groq-sdk@^0.12.0`
+  - Updated environment variables in `.env.local.example`: `GROQ_API_KEY` and `GROQ_MODEL` (using llama-3.3-70b-versatile)
+- **Interface/Contracts**:
+  - Groq chat completions API format with messages array (system + user roles)
+  - Same response format as before: `{ text: string, meta: { provider, model, latencyMs } }`
+  - Temperature: 0.2, max_tokens: 1024 (assistant) / 2048 (crop plan)
+- **Data Impact**: None (no schema changes, same response structure)
+- **Runtime/Ops Impact**:
+  - Requires `GROQ_API_KEY` environment variable when using Groq provider
+  - Default model: `llama-3.3-70b-versatile` (can be overridden via `GROQ_MODEL`)
+  - Error mapping updated for Groq-specific errors (rate limits, auth, model not found)
+- **Known Gaps**: None
+- **Updated Docs**:
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/application/CHANGELOG.md` (this file)
+- **Validation**:
+  - `npx tsc --noEmit`: passed
+  - `npm run build`: passed
+  - All 473 packages audited, groq-sdk installed successfully
+
+## 2026-02-13
+
+- Moved satellite analysis UX to dedicated page + navigation-first access:
+  - added `/satellite` to top and bottom navbar navigation
+  - converted dashboard satellite block into a lightweight entry card linking to `/satellite`
+  - updated footer tools links to include satellite analysis route
+- Updated docs for satellite page consolidation:
+  - `docs/application/README.md`
+  - `docs/application/overview/SCOPE_BASELINE.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+- Added interactive satellite map documentation sync (Day 6 Phase 1):
+  - documented shared AOI resolver precedence (`query_bbox` -> `profile_land_geometry` -> `profile_coordinates_derived` -> `demo_fallback`) for ingest + health APIs
+  - documented `/api/satellite/health` map overlay contract (`health.mapOverlay`) and metadata source fields (`aoiSource`, `geometryUsed`)
+  - documented dashboard + `/satellite` drilldown UI behavior (manual refresh, source messaging, fallback transparency)
+  - documented Firestore geometry coordinate serialization/rehydration for parcel polygon persistence compatibility
+- Updated satellite-related docs:
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/overview/SCOPE_BASELINE.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+- Added assistant provider-toggle documentation (`ollama` / `gemini`):
+  - documented `/api/ai/query` provider contract and `/api/voice/roundtrip` assistant provider propagation
+  - documented UI model toggle behavior in assistant module
+  - documented Gemini model fallback chain and actionable error mapping (missing key, invalid key, model mismatch, quota exhaustion)
+- Updated assistant docs for provider-aware validation scenarios and runtime requirements:
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+- Added assistant session/language stability documentation:
+  - documented `New Session` backend `sessionId` regeneration to prevent prior language/context bleed
+  - documented English fallback inference for Latin-script queries without explicit language hint
+  - documented English-target correction retry when model output drifts into non-Latin scripts
+  - documented truncation continuation merge path for cut-off assistant responses
+- Updated assistant architecture/API/quality docs for session isolation and completion reliability behavior:
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+- Added assistant timeout reliability hardening documentation:
+  - documented timeout-aware Ollama retry with reduced prompt context for `/api/ai/query`
+  - documented non-fatal correction-pass timeout behavior (keep first successful answer)
+  - documented timeout regression validation using Bengali transliterated farmer input
+- Updated assistant reliability notes across API/architecture/quality docs:
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/README.md`
+- Added assistant multilingual response hardening documentation:
+  - documented removal of English-only response constraint in assistant prompt policy
+  - documented same-language response enforcement for non-English farmer queries
+  - documented optional language hint support on `/api/ai/query` and voice-roundtrip propagation into assistant query layer
+  - documented assistant language-correction retry guard for English-redirection outputs
+- Updated assistant architecture/API/quality docs for multilingual text response behavior:
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/README.md`
+- Added assistant dev-runtime stability documentation:
+  - documented Next.js Segment Explorer manifest issue mitigation (`experimental.devtoolSegmentExplorer=false`) for `/assistant` in development mode
+  - documented metadata compatibility fix (`viewport`/`themeColor` moved to `viewport` export in `app/layout.tsx`)
+  - documented regression validation evidence showing `/assistant` dev load without `SegmentViewNode` manifest errors
+- Expanded multilingual voice verification documentation:
+  - documented all-language STT fallback sweep across configured language set
+  - documented all-language roundtrip sweep (`/api/voice/roundtrip`, `language=ttsLanguage`) with success evidence
+- Added voice runtime container/language hardening documentation:
+  - documented automatic WebM/M4A/MP4-to-WAV conversion before local whisper transcription
+  - documented optional `VOICE_FFMPEG_BIN` runtime key and ffmpeg dependency behavior
+  - documented unsupported whisper language fallback (`languageUsed=auto`) for configured language sets (example: `or-IN`)
+  - documented Day 3 smoke-test expansion for WebM STT + multilingual fallback regression coverage
+  - documented Indic transcript script-normalization behavior (example: Bengali selection no longer rendered in Devanagari script)
+- Added voice input regression hardening documentation after Hindi STT failure investigation:
+  - documented assistant-side recognizer finalization fix (prevents browser transcript loss on quick stop)
+  - documented STT MIME normalization and expanded mobile container compatibility (`audio/m4a`, `audio/x-m4a`, `video/webm`, `video/ogg`, `video/mp4`)
+  - documented improved whisper runtime error diagnostics and updated validation matrix with success/error endpoint checks
+- Updated voice-related architecture, API, runtime, and quality docs to align with implemented behavior:
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/architecture/ARCHITECTURE_OVERVIEW.md`
+  - `docs/application/operations/ENVIRONMENT_RUNTIME_REQUIREMENTS.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/README.md`
+
+## 2026-02-09
+
+- Added UI-backend drift prevention governance documentation:
+  - introduced mandatory API-consumer synchronization discipline in `AGENTS.md`
+  - added governance policy section for endpoint/consumer mapping and same-session sync expectations
+  - added checklist contract-sync gate with required success-path and error-path validation evidence
+- Added profile GPS + dashboard satellite AOI integration documentation:
+  - documented new Farm Profile GPS capture flow (manual coordinates + browser geolocation autofill)
+  - documented coordinate validation guardrails in `/api/farm-profile`
+  - documented dashboard AOI derivation behavior (farm GPS + land size -> satellite `bbox`) and explicit demo fallback messaging
+- Added scheme card proportion balancing documentation:
+  - reduced checklist section visual dominance with compact row spacing
+  - introduced responsive checklist grid layout for better content balance
+  - standardized checkbox size via custom indicators to avoid browser-specific oversized controls
+- Added scheme checklist UX readability polish documentation:
+  - replaced raw checklist key display with humanized document labels in scheme cards
+  - updated checklist control presentation to compact mobile-friendly rows with readiness counter
+  - retained existing `/api/schemes/checklist` contract while improving frontend clarity
+- Added UI-backend contract sync documentation for profile, schemes, and community modules:
+  - documented full farm profile field contract now exposed in frontend (including irrigation, budget/risk, water source, and historical notes)
+  - documented scheme recommendation payload consumption and live saved/checklist persistence flows in UI
+  - documented community post/like/comment contract alignment, including required `userEmail` on post creation
+- Added Firebase auth configuration troubleshooting documentation and runtime preflight guidance:
+  - documented Firebase Authentication bring-up requirements (enable Email/Password, authorized local domains)
+  - added Identity Toolkit preflight command to detect `CONFIGURATION_NOT_FOUND` before UI signup testing
+  - updated operational notes to reflect new actionable client error mapping for common Firebase auth config failures
+- Added Day 3 voice multilingual hardening documentation:
+  - Expanded documented/implemented language support to 13 configured languages (`hi-IN`, `en-IN`, `mr-IN`, `bn-IN`, `ta-IN`, `te-IN`, `gu-IN`, `kn-IN`, `ml-IN`, `pa-IN`, `ur-IN`, `or-IN`, `as-IN`).
+  - Updated API, module, runtime, and quality docs to reflect local `whisper_cpp` + `espeak` runtime behavior and multilingual validation strategy.
+  - Added direct local STT runtime verification guidance (WAV upload -> `provider=whisper_cpp`).
+- Completed Day 3 documentation sync for satellite intelligence + voice assistant delivery:
+  - Added Day 3 API contracts for `/api/satellite/health`, `/api/voice/stt`, `/api/voice/tts`, and `/api/voice/roundtrip`.
+  - Updated architecture docs with Satellite Health and Voice Intelligence module boundaries and flow definitions.
+  - Updated data docs with Day 3 local-ephemeral voice artifact lifecycle and trust/fallback controls.
+  - Updated operations docs with Day 3 environment keys, smoke validation commands, and privacy guardrails.
+  - Updated scope baseline to mark Day 3 as implemented and shift next focus to Day 4.
+- Executed full UI revamp for hackathon MVP:
+  - Mobile-first bottom navigation.
+  - Minimal Stone/Emerald design system with constrained palette.
+  - Simplified MVP-focused landing page (Assistant/Schemes/Profile only).
+  - Optimized touch targets and viewport handling for all core routes.
+- Added reusable cross-agent profile `ANTIGRAVITY.md` for shorter future prompts, with mobile-first UI defaults and non-UI fallback guidance.
+- Linked Antigravity profile usage into `AGENTS.md` and governance notes for consistent policy reuse.
+- Added long-term documentation enforcement controls:
+  - strengthened `AGENTS.md` with a non-negotiable documentation depth standard
+  - introduced `docs/application/governance/DOC_UPDATE_CHECKLIST.md` as mandatory non-trivial update gate
+  - linked checklist into application docs index and governance policy
+- Expanded modular application documentation depth across overview, architecture, data, API, operations, and governance modules.
+- Added detailed environment/runtime matrix with required vs optional keys, setup workflow, and fallback behavior expectations.
+- Added route-level API inventory with request/response summaries and known contract inconsistencies.
+- Added explicit data collection catalog and Day 2 fallback persistence mapping.
+- Added stronger quality, release-readiness, and documentation-governance checklists.
+
+## 2026-02-09 (Earlier)
+
+- Completed Day 2 Phase 1 seed expansion to 34 schemes and validated primary Firestore Day 2 collection writes.
+- Added Day 2 scheme matcher architecture, policy matcher APIs/UI, CDSE satellite ingest baseline, and fallback persistence notes.
+- Refactored application documentation from single-file format into modular folder structure.
+
+## 2026-02-08
+
+- Established comprehensive application documentation baseline.
+- Linked documentation governance to PRD-driven workflow.
+
+- Day 3 UI Polish: Replaced hardcoded color classes with semantic design tokens across schemes, profile, and dashboard pages.

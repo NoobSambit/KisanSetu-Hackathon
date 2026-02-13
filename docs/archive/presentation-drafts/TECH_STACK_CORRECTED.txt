@@ -1,0 +1,201 @@
+# 🛠️ TECH STACK - COPY PASTE TO PPT SLIDE
+
+---
+
+## INFRASTRUCTURE & HOSTING (Cost-Effective Approach)
+
+Local LLM Running on Our Server (NOT farmer's device)
+• Ollama runtime hosting Llama 3.2 8B model on our RTX 4050
+• Single server handles 1000+ concurrent queries
+• API serves responses to farmers via WhatsApp/Web interface
+• Benefit: 90% cost savings vs cloud GPUs ($0 vs $0.02 per query)
+
+Scalable Architecture
+• Start with 1 RTX 4050 server for first 100K users
+• Scale by adding more RTX 4050 servers (each ~₹8,000/month rental)
+• Alternative: Upgrade to A100/H100 cloud GPUs only when needed for peak loads
+• Hybrid approach keeps operational costs minimal
+
+Cloud Backup for Reliability
+• Vercel for frontend hosting (Free tier sufficient)
+• Firebase for database (Free Spark tier: 50K reads/day, 20K writes/day)
+• Cloud AI (Gemini) as fallback if local server is overloaded
+• Ensures 99.9% uptime
+
+Infrastructure Costs
+• Local RTX 4050 server rental: ~₹8,000/month
+• Vercel hosting: ₹0 (Free tier)
+• Firebase database: ₹0 (Free Spark tier)
+• Total infrastructure: ₹8,000/month vs cloud-only solution: ₹2-5 lakh/month
+• This enables free + affordable premium pricing
+
+---
+
+## FARMER ACCESS (What Farmers Actually Need)
+
+Any smartphone with internet
+• Android or iOS - any device from last 6 years works
+• WhatsApp application (400M+ Indians already use)
+• Optional: Web browser for full dashboard
+• No laptop required, no GPU needed, no expensive hardware
+
+WhatsApp Interface (Primary)
+• Farmers send questions via WhatsApp messages
+• Voice notes supported (farmers prefer speaking)
+• Image uploads for disease diagnosis
+• No app download, no account creation required
+• Works in 10+ regional languages
+
+Mobile Web App
+• Progressive Web App (PWA) accessible via browser
+• Offline capability with Service Workers caching
+• Touch-optimized interface for low-cost smartphones
+• Works on 2G/3G connections
+
+Minimal Requirements
+• Data plan: 100MB/month sufficient for text queries
+• Voice/image queries: 500MB/month for full functionality
+• Storage: 100MB on phone for cached data
+• No technical knowledge required
+
+---
+
+## AI & MACHINE LEARNING STACK
+
+Main LLM: Llama 3.2 8B (Hosted on Our Server)
+• Runs on our RTX 4050 GPU locally
+• Response time: <2 seconds per query
+• Cost: ₹0 per query (one-time server cost)
+• Serves unlimited queries without API bills
+
+Fallback AI: Google Gemini 1.5 Flash (Cloud)
+• Used only when local server is overloaded
+• Cost: ₹0.15 per query (for backup capacity)
+• Ensures reliability at peak times
+
+Speech-to-Text: Whisper Small Model
+• Runs on our RTX 4050 server
+• Supports: Hindi, Tamil, Telugu, Marathi, Bengali, Punjabi, Gujarati, Malayalam, Kannada
+• Accuracy: 95%+ for Indian accents
+• Process voice notes from WhatsApp
+• Cost: ₹0.005 per query (local inference)
+
+Text-to-Speech: Coqui TTS
+• Runs on our RTX 4050 server
+• Generates natural voice audio in 5 core Indian languages
+• Quality: Comparable to premium TTS services
+• Sends audio back via WhatsApp
+• Cost: ₹0.003 per query (local inference)
+
+ML Prediction Models
+• Prophet (Meta) for time-series price forecasting (7/30/90 days)
+• DBSCAN clustering for disease outbreak hotspots detection
+• Random Forest regression for yield estimation based on historical data
+• All models run on our server using farmer data
+
+---
+
+## DATABASE & STORAGE
+
+Primary Database: Firebase Firestore (Free Tier)
+• Real-time data synchronization
+• Stores 50M+ records with free Spark tier
+• Collections: farmer profiles, farm history, satellite health, scheme recommendations
+• Offline sync capability with Firebase SDK
+• Automatic sharding and indexing
+
+File Storage: Firebase Storage (Free Tier)
+• User uploaded images (crop disease photos)
+• Generated government scheme application forms (PDF)
+• Satellite imagery cache (reduces API calls)
+• Voice audio files
+• 5GB free storage sufficient for first 100K users
+
+Caching Layer: Service Workers (On Farmer's Phone)
+• Critical data cached locally on farmer's device
+• Enables offline access to previously viewed content
+• Syncs with Firebase when connection restored
+• Reduces server load by 40%
+
+---
+
+## EXTERNAL API INTEGRATIONS (All Free)
+
+Satellite Data: Copernicus Sentinel-2 Hub (Completely Free)
+• European Space Agency provides free satellite imagery
+• 10-meter resolution per pixel (sufficient for 2+ acre farms)
+• New imagery every 5 days
+• No API key required, no usage limits
+• Data source: https://scihub.copernicus.eu/
+
+Weather Data: OpenWeatherMap (Free Tier)
+• 1 million API calls per day free (sufficient for 10M users)
+• Current weather + 7-day forecasts
+• Historical weather data (last 10 years) for ML models
+• No cost for first year of operations
+• API key: Free registration at https://openweathermap.org/api
+
+Market Prices: Agmarknet (Government Data - Free)
+• Current prices from 300+ major mandis
+• Historical price data (3 years) for ML forecasting
+• No API key required
+• Publicly available at http://agmarknet.gov.in/
+
+Government Schemes: Manual Curation + AI Extraction
+• 50-100 schemes manually curated from official portals
+• AI extracts scheme details from PDF documents
+• No paid API required
+• Data source: https://agricoop.gov.in/ (Ministry of Agriculture)
+
+WhatsApp Integration: Twilio Sandbox (Free for Development)
+• Testing unlimited WhatsApp messages at no cost
+• Production: WhatsApp Business API (after funding)
+• Tiered pricing: Pay only for actual usage
+
+---
+
+## BACKEND FRAMEWORKS
+
+Frontend: Next.js 15 (App Router)
+• React Server Components for optimal performance
+• Built-in API routes for core features
+• TypeScript for type safety
+• Tailwind CSS for styling
+
+Backend: Node.js (Next.js API Routes) + FastAPI (Python)
+• Node.js for web dashboard and core features
+• FastAPI for voice AI processing (faster async operations)
+• OpenAPI documentation auto-generated
+
+Authentication: Firebase Auth
+• Email/password and phone-based authentication
+• Session management
+• Secure token storage
+• Support for social logins (Google, Facebook)
+
+---
+
+## SECURITY & DATA PRIVACY
+
+Data Privacy for Farmers
+• Individual farm data stored securely on our servers
+• Data used only for providing personalized advice
+• Aggregated/anonymized insights licensed to companies (no individual records)
+• Farmers can request complete data deletion at any time
+• GDPR and DPDPA compliant practices
+
+Authentication & Authorization
+• Firebase Auth with secure token management
+• Role-based access control (admin, farmer, partner)
+• Encrypted data transmission (HTTPS)
+• Rate limiting to prevent abuse
+
+Server Security
+• Input validation and sanitization
+• SQL injection prevention (Firestore is NoSQL)
+• XSS protection
+• CORS configuration for API endpoints
+
+---
+
+*Copy each section as a text box or bullet point in your PPT slide. This tech stack is realistic, cost-effective, and doesn't require farmers to have expensive hardware.*

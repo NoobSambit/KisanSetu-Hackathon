@@ -1,0 +1,37 @@
+# 🛠️ TECH STACK - COPY PASTE TO PPT SLIDE
+
+---
+
+Frontend
+• Next.js 15 (App Router)
+• TypeScript
+• Tailwind CSS 3.4
+• React Server Components
+
+Backend
+• Node.js (Next.js API Routes)
+• FastAPI (Python)
+
+AI & ML
+• Ollama (Llama 3.2 8B)
+• Whisper (Speech-to-Text)
+• Coqui TTS (Text-to-Speech)
+• Prophet, DBSCAN, Random Forest
+
+Database
+• Firebase Firestore
+• Firebase Storage
+
+External APIs
+• Copernicus Sentinel-2 (Satellite)
+• OpenWeatherMap (Weather)
+• Agmarknet (Prices)
+• Twilio (WhatsApp)
+
+Hosting & Infrastructure
+• Vercel (Frontend)
+• Railway (Backend)
+• Our RTX 4050 Server (Local LLM)
+
+Authentication
+• Firebase Auth
