@@ -11,6 +11,133 @@ This file tracks cross-cutting app and process changes across all hackathon days
 
 ---
 
+## 2026-02-14 04:48 IST | Day 2 / Schemes UX Simplification (Recommendation Page Removed)
+
+- Summary:
+  - Removed the temporary recommendation route to keep a single schemes UX path.
+  - `app/schemes/page.tsx` remains the canonical entrypoint and redirects to `/schemes/agriculture`.
+  - Deleted `app/schemes/recommendations/page.tsx` and removed recommendation back-links from `app/schemes/agriculture/page.tsx`.
+  - Recommendation engine APIs remain available for future surfaces/testing:
+    - `GET /api/schemes/recommendations`
+    - `POST /api/schemes/checklist`
+    - `GET|POST /api/schemes/saved`.
+- Files:
+  - `app/schemes/page.tsx`
+  - `app/schemes/agriculture/page.tsx`
+  - `README.md`
+  - `docs/application/README.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/overview/SCOPE_BASELINE.md`
+  - `docs/application/CHANGELOG.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY2_PROGRESS_LOG.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+- Validation:
+  - `npx tsc --noEmit` passed.
+  - `npm run build` passed.
+  - `HEAD /schemes` -> `307` (`location: /schemes/agriculture`)
+  - `HEAD /schemes/agriculture` -> `200`
+  - `HEAD /schemes/recommendations` -> `404`.
+  - Documentation checklist note: `docs/application/api/API_INVENTORY.md` intentionally unchanged because no API contract/request/response behavior changed in this update.
+
+## 2026-02-14 04:15 IST | Day 2 / Full Agriculture Scheme Corpus Scrape + Browse API/UI
+
+- Summary:
+  - Added exhaustive agriculture scheme scraping pipeline covering all India.gov agriculture listing pages (`pagenumber=1..83`) and per-scheme MyScheme content APIs.
+  - New scraper script:
+    - `scripts/scrape_agriculture_schemes.mjs`
+    - output dataset: `data/schemes/agriculture_schemes_catalog.json`
+    - output report: `data/schemes/agriculture_schemes_scrape_report.json`
+    - current run evidence: `825` unique slugs, `825` detail fetch successes, `0` detail failures.
+  - Added optional Firestore seed script for this corpus:
+    - `scripts/seed_agriculture_schemes.mjs`
+    - target collection: `agricultureSchemeCatalog`
+    - includes document-size safety handling (raw-trim fallback near Firestore size limit).
+  - Added new service, endpoint, and UI to consume the full catalog:
+    - `lib/services/agricultureSchemeCatalogService.ts`
+    - `GET /api/schemes/agriculture`
+    - `app/schemes/agriculture/page.tsx`
+    - linked from `app/schemes/page.tsx`.
+  - Set `/api/schemes/agriculture` default source mode to `local` (read local corpus by default) with optional `source=auto|firestore` to control Firestore read behavior and cost.
+  - Updated schemes routing so the primary `Schemes` navigation opens full-catalog UI by default:
+    - `/schemes` now redirects to `/schemes/agriculture`
+    - dedicated recommendation page removed to keep a single browse experience.
+  - Added npm commands:
+    - `npm run scrape:agriculture-schemes`
+    - `npm run seed:agriculture-schemes`.
+- Files:
+  - `scripts/scrape_agriculture_schemes.mjs`
+  - `scripts/seed_agriculture_schemes.mjs`
+  - `data/schemes/agriculture_schemes_catalog.json`
+  - `data/schemes/agriculture_schemes_scrape_report.json`
+  - `lib/services/agricultureSchemeCatalogService.ts`
+  - `app/api/schemes/agriculture/route.ts`
+  - `app/schemes/agriculture/page.tsx`
+  - `app/schemes/page.tsx`
+  - `types/index.ts`
+  - `package.json`
+  - docs sync under `docs/application/**`, `docs/prd/**`, `docs/hackathon/**`, and `README.md`.
+- Validation:
+  - `npx tsc --noEmit` passed.
+  - `npm run build` passed.
+  - API success path:
+    - `GET /api/schemes/agriculture?page=1&pageSize=5&query=farmer` -> `200`, `source=local_file`, paginated response with `5` records.
+  - API error paths:
+    - `GET /api/schemes/agriculture?page=9999&pageSize=20` -> `400`, page out-of-range validation.
+    - `GET /api/schemes/agriculture?source=badsource` -> `400`, source enum validation.
+  - User-instruction note:
+    - Full-catalog DB seeding was intentionally not executed in this session.
+  - Route behavior check:
+    - `HEAD /schemes` -> `307` (`location: /schemes/agriculture`)
+    - `HEAD /schemes/agriculture` -> `200`
+    - `HEAD /schemes/recommendations` -> `404`.
+
+## 2026-02-14 02:46 IST | Day 4 / Agmarknet 2025 Exhaustive Ingestion + Market UI/API Replacement
+
+- Summary:
+  - Integrated external Agmarknet market endpoints (`/api/categories`, `/api/commodities`, `/api/states`, `/api/districts`, `/api/prices`, `/api/quantities`) with required browser-like headers for POST calls.
+  - Added resumable offline ingestion pipeline `scripts/ingest_agmarknet_2025.mjs` for full 2025 matrix:
+    - all categories and commodities (including `category_id=null` -> `Uncategorized`)
+    - all geo levels (`all_india`, `state`, `district`)
+    - all granularities (`d,m,y`)
+    - both metrics (`price`, `quantity`)
+    - run metadata + checkpoint persistence in Firestore.
+  - Replaced `/api/prices` contract in place with:
+    - `action=filters`
+    - `action=cards`
+    - `action=series`
+  - Replaced `app/market-prices/page.tsx` with marketplace-style browsing UI + analytics detail modal (timeseries + table), metric toggle, granularity toggle, and responsive states.
+- Files:
+  - `scripts/ingest_agmarknet_2025.mjs`
+  - `lib/firebase/market.ts`
+  - `app/api/prices/route.ts`
+  - `app/market-prices/page.tsx`
+  - `types/index.ts`
+  - `package.json`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY4_PROGRESS_LOG.md`
+  - docs under `docs/application/**` and `README.md` for contract/data/runtime sync.
+- Validation:
+  - `npx tsc --noEmit` passed.
+  - `npm run build` passed.
+  - Ingest smoke:
+    - `node scripts/ingest_agmarknet_2025.mjs --year=2025 --max-combos=50 --concurrency=4 --granularities=d,m,y`
+    - result: attempted `50`, stored `3`, empty `47`, failed `0`.
+  - Resume checkpoint:
+    - interrupted + resumed run `agmarknet_y2025_1771016530612`
+    - cursor recovered (`30 -> 1450`) with deterministic series IDs (`y2025_{granularity}_{stateId}_{districtId}_{commodityId}`), no duplicate-id drift.
+  - Source-vs-DB correctness checks:
+    - all-India (`state=0,district=0,commodity=451`)
+    - state (`state=23,district=0,commodity=451`)
+    - district (`state=23,district=432,commodity=451`)
+    - across `d,m,y` and both metrics -> all checks `OK` (float-tolerant comparison).
+  - API contract checks on `next dev -p 3110`:
+    - `filters` success (`200`)
+    - `cards` pagination success (`200`)
+    - `series` success (`200`) + empty-path success (`empty=true`)
+    - invalid granularity (`400`)
+    - missing required ids (`400`)
+
 ## 2026-02-13 15:03 IST | Review 1 / Complete Pitch Deck Creation
 
 - Summary:

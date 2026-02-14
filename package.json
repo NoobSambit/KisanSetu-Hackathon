@@ -8,15 +8,22 @@
     "start": "NEXT_DIST_DIR=.next/build next start",
     "lint": "next lint",
     "seed:day2-schemes": "node scripts/day2_seed_schemes.mjs",
+    "scrape:agriculture-schemes": "node scripts/scrape_agriculture_schemes.mjs --start-page=1 --end-page=83 --detail-concurrency=6 --out=data/schemes/agriculture_schemes_catalog.json --report=data/schemes/agriculture_schemes_scrape_report.json",
+    "seed:agriculture-schemes": "node scripts/seed_agriculture_schemes.mjs --input=data/schemes/agriculture_schemes_catalog.json --collection=agricultureSchemeCatalog --concurrency=20",
+    "ingest:agmarknet-2025": "node scripts/ingest_agmarknet_2025.mjs --year=2025 --resume --concurrency=4 --granularities=d,m,y",
     "smoke:day2": "bash scripts/day2_smoke_test.sh",
     "smoke:day3": "bash scripts/day3_smoke_test.sh"
   },
   "dependencies": {
-    "groq-sdk": "^0.12.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.8",
+    "@mui/material": "^7.3.8",
     "@turf/area": "^7.3.4",
     "@turf/helpers": "^7.3.4",
     "@types/leaflet": "^1.9.21",
     "firebase": "^11.0.2",
+    "groq-sdk": "^0.12.0",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
     "lucide-react": "^0.563.0",
@@ -27,6 +34,8 @@
     "react-leaflet-draw": "^0.21.0"
   },
   "devDependencies": {
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.11",
     "@types/leaflet-draw": "^1.0.13",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",

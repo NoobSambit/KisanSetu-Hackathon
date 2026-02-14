@@ -1,6 +1,6 @@
 # Quality and Testing Strategy
 
-Last Updated: 2026-02-13 (Satellite Right-Panel Consistency + Color Labels)
+Last Updated: 2026-02-14 (Agriculture Full-Catalog API/UI Validation)
 
 This document defines how KisanSetu validates correctness and release confidence during hackathon delivery.
 
@@ -28,11 +28,18 @@ These are mandatory before marking any phase as done.
   - `bash scripts/day1_smoke_test.sh`
 - Day 2 seed:
   - `npm run seed:day2-schemes`
+- Day 2 full agriculture scrape:
+  - `npm run scrape:agriculture-schemes`
+- Day 2 full agriculture seed (optional; do not run in read-only validation sessions):
+  - `npm run seed:agriculture-schemes`
 - Day 2 smoke:
   - `bash scripts/day2_smoke_test.sh`
 - Day 3 smoke:
   - `bash scripts/day3_smoke_test.sh`
   - includes WebM STT runtime and multilingual fallback check when `ffmpeg` + `espeak/espeak-ng` are available
+- Day 4 ingestion smoke:
+  - `node scripts/ingest_agmarknet_2025.mjs --year=2025 --max-combos=50 --concurrency=4 --granularities=d,m,y`
+  - resume validation via `--resume` + checkpoint cursor continuity.
 - Voice multilingual regression sweep (manual loop):
   - `POST /api/voice/stt` across all configured language codes with transcript fallback
   - `POST /api/voice/roundtrip` across same language set (`language=ttsLanguage`)
@@ -73,8 +80,11 @@ npx tsc --noEmit
 npm run build
 bash scripts/day1_smoke_test.sh
 npm run seed:day2-schemes
+npm run scrape:agriculture-schemes
+npm run seed:agriculture-schemes
 bash scripts/day2_smoke_test.sh
 bash scripts/day3_smoke_test.sh
+node scripts/ingest_agmarknet_2025.mjs --year=2025 --max-combos=50 --concurrency=4 --granularities=d,m,y
 ```
 
 ## Functional Scenario Matrix
@@ -100,6 +110,9 @@ bash scripts/day3_smoke_test.sh
 | Farm Profile | Save profile without `location.landGeometry` | `400` validation error (`Farm boundary map selection is required.`) |
 | Schemes | Fetch recommendations with profile | scored list with reasons and status labels |
 | Schemes | Toggle save/checklist | persisted state and updated readiness score |
+| Schemes | `GET /api/schemes/agriculture?page=1&pageSize=5&query=farmer` | `200`, paginated data payload with `source` + `facets` + `items` |
+| Schemes | `GET /api/schemes/agriculture?page=9999&pageSize=20` | `400`, explicit out-of-range page validation error |
+| Schemes | `GET /api/schemes/agriculture?source=badsource` | `400`, explicit invalid source validation error |
 | Satellite | Ingest with valid CDSE config | scenes persisted with metadata |
 | Satellite | Ingest with missing CDSE config and fallback enabled | explicit fallback source returned |
 | Satellite | Health insight generation (`/api/satellite/health`) | score + summary + zone indicators + recommendations + alerts |
@@ -137,7 +150,13 @@ bash scripts/day3_smoke_test.sh
 | Voice | STT multilingual sweep across all configured language codes | all requests return `200` with explicit provider metadata |
 | Voice | Roundtrip multilingual sweep across all configured language codes | all requests return `200` with transcript + answer + TTS payload |
 | Weather | Query by city | weather payload with advice |
-| Prices | Query by crop | price list payload |
+| Prices | `action=filters` | `200`, taxonomy payload includes categories/commodities/states/districts counts |
+| Prices | `action=cards` pagination | `200`, card list + pagination object |
+| Prices | `action=cards` with state+district filter | `200`, filtered result count shrinks to matching geography |
+| Prices | `action=series` success | `200`, returns non-empty series with price + quantity points |
+| Prices | `action=series` empty combo | `200`, `empty=true` and null summary values |
+| Prices | invalid `granularity` | `400` validation error |
+| Prices | missing required IDs for `series` | `400` validation error |
 | Disease | Upload invalid file type | `400` validation error |
 
 ## Non-Functional Quality Targets
@@ -169,6 +188,7 @@ Evidence destinations:
 - Limited automated unit tests for rule engines and service utilities.
 - No consolidated end-to-end browser test suite yet.
 - Authorization and rules hardening tests are mostly manual.
+- Day 4 market UI interaction coverage (client-side filter/card/modal behavior) is currently validated through API contract and implementation checks, not browser automation.
 
 ## Planned Testing Improvements
 

@@ -1,6 +1,6 @@
 # Day 2 Progress Log
 
-Last Updated: February 9, 2026, 21:25 IST
+Last Updated: February 14, 2026, 04:48 IST
 
 ## Environment Verification
 - [x] CDSE OAuth credentials configured in local environment (`CDSE_CLIENT_ID`, `CDSE_CLIENT_SECRET`, `CDSE_TOKEN_URL`).
@@ -91,3 +91,49 @@ Last Updated: February 9, 2026, 21:25 IST
 - Build-check:
   - Command: `npm run build`
   - Result: pass
+
+## Full Agriculture Catalog Expansion (04:15 IST)
+- [x] Added exhaustive Day 2 agriculture corpus scrape pipeline:
+  - `scripts/scrape_agriculture_schemes.mjs`
+  - listing scope: India.gov agriculture search pages `1..83`
+  - per-scheme scope: MyScheme details + documents + FAQs + application channels.
+- [x] Added normalized shared-schema dataset output:
+  - `data/schemes/agriculture_schemes_catalog.json`
+  - `data/schemes/agriculture_schemes_scrape_report.json`.
+- [x] Added optional Firestore seed path for full corpus:
+  - `scripts/seed_agriculture_schemes.mjs`
+  - target collection: `agricultureSchemeCatalog`.
+- [x] Added full-catalog browse contract and UI:
+  - API: `GET /api/schemes/agriculture`
+  - default API source mode: `local` (Firestore opt-in via query mode)
+  - UI: `app/schemes/agriculture/page.tsx`
+  - entrypoint link added from `app/schemes/page.tsx`.
+  - route behavior updated:
+    - `/schemes` -> redirect to `/schemes/agriculture`
+    - dedicated recommendation page removed to avoid dual-schemes UX paths.
+
+## Validation Update (04:15 IST)
+- Full scrape:
+  - Command: `npm run scrape:agriculture-schemes`
+  - Result: `83/83` listing pages succeeded, `825` unique schemes, detail success `825`, detail failures `0`.
+- Type-check:
+  - Command: `npx tsc --noEmit`
+  - Result: pass
+- Build-check:
+  - Command: `npm run build`
+  - Result: pass
+- API success path:
+  - Command: `curl 'http://localhost:3112/api/schemes/agriculture?page=1&pageSize=5&query=farmer'`
+  - Result: `200`, paginated payload returned (`source=local_file`).
+- API error paths:
+  - Command: `curl 'http://localhost:3112/api/schemes/agriculture?page=9999&pageSize=20'`
+  - Result: `400`, explicit page-range validation.
+  - Command: `curl 'http://localhost:3112/api/schemes/agriculture?source=badsource'`
+  - Result: `400`, explicit source validation.
+- Data safety note:
+  - Firestore seed script intentionally not executed in this validation session.
+- Routing validation:
+  - Command: `curl -I http://localhost:3114/schemes`
+  - Result: `307` redirect to `/schemes/agriculture`.
+  - Command: `curl -I http://localhost:3114/schemes/recommendations`
+  - Result: `404` (route removed).

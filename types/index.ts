@@ -716,6 +716,200 @@ export interface PriceResponse {
 }
 
 /**
+ * Market Data Platform Types (Agmarknet 2025)
+ */
+export type MarketGranularity = 'd' | 'm' | 'y';
+export type MarketMetric = 'price' | 'quantity';
+export type MarketSeriesLevel = 'all_india' | 'state' | 'district';
+
+export interface MarketCategory {
+  categoryId: number | null;
+  categoryName: string;
+}
+
+export interface MarketCommodity {
+  commodityId: number;
+  commodityName: string;
+  categoryId: number | null;
+  categoryName: string;
+}
+
+export interface MarketState {
+  stateId: number;
+  stateName: string;
+}
+
+export interface MarketDistrict {
+  districtId: number;
+  districtName: string;
+  stateId: number;
+  stateName: string;
+}
+
+export interface MarketDistrictsByState {
+  stateId: number;
+  stateName: string;
+  districts: MarketDistrict[];
+}
+
+export interface MarketTaxonomyDoc {
+  versionId: string;
+  source: string;
+  fetchedAt: string;
+  categories: MarketCategory[];
+  commodities: MarketCommodity[];
+  states: MarketState[];
+  districtsByState: MarketDistrictsByState[];
+  counts: {
+    categories: number;
+    commodities: number;
+    states: number;
+    districts: number;
+  };
+}
+
+export interface MarketSeriesPointPrice {
+  t: string;
+  p_min: number | null;
+  p_max: number | null;
+  p_modal: number | null;
+}
+
+export interface MarketSeriesPointQuantity {
+  t: string;
+  qty: number | null;
+}
+
+export interface MarketSeriesDoc {
+  seriesId: string;
+  year: number;
+  granularity: MarketGranularity;
+  level: MarketSeriesLevel;
+  categoryId: number | null;
+  categoryName: string;
+  commodityId: number;
+  commodityName: string;
+  stateId: number;
+  stateName: string;
+  districtId: number;
+  districtName: string;
+  pricePoints: MarketSeriesPointPrice[];
+  quantityPoints: MarketSeriesPointQuantity[];
+  pricePointCount: number;
+  quantityPointCount: number;
+  lastUpdated: string;
+  sourceMetadata: {
+    source: string;
+    year: number;
+    granularities: MarketGranularity[];
+    endpoints: {
+      prices: string;
+      quantities: string;
+    };
+    ingestRunId?: string;
+  };
+}
+
+export interface MarketCardItem {
+  seriesId: string;
+  year: number;
+  granularity: MarketGranularity;
+  level: MarketSeriesLevel;
+  categoryId: number | null;
+  categoryName: string;
+  commodityId: number;
+  commodityName: string;
+  stateId: number;
+  stateName: string;
+  districtId: number;
+  districtName: string;
+  latestPointLabel: string | null;
+  latestModalPrice: number | null;
+  latestMinPrice: number | null;
+  latestMaxPrice: number | null;
+  latestQuantity: number | null;
+  previousModalPrice: number | null;
+  previousQuantity: number | null;
+  modalDeltaAbs: number | null;
+  modalDeltaPct: number | null;
+  quantityDeltaAbs: number | null;
+  quantityDeltaPct: number | null;
+  pricePointCount: number;
+  quantityPointCount: number;
+  lastUpdated: string;
+}
+
+export interface MarketFiltersResponse {
+  success: boolean;
+  data?: {
+    year: number;
+    taxonomyVersion: string;
+    source: string;
+    fetchedAt: string;
+    categories: MarketCategory[];
+    commodities: MarketCommodity[];
+    states: MarketState[];
+    districtsByState: MarketDistrictsByState[];
+    counts: {
+      categories: number;
+      commodities: number;
+      states: number;
+      districts: number;
+    };
+  };
+  error?: string | null;
+}
+
+export interface MarketCardsResponse {
+  success: boolean;
+  data?: {
+    year: number;
+    granularity: MarketGranularity;
+    cards: MarketCardItem[];
+    pagination: {
+      page: number;
+      limit: number;
+      totalItems: number;
+      totalPages: number;
+      hasNextPage: boolean;
+      hasPrevPage: boolean;
+    };
+    filtersApplied: {
+      categoryId?: number;
+      commodityId?: number;
+      stateId?: number;
+      districtId?: number;
+    };
+    generatedAt: string;
+  };
+  error?: string | null;
+}
+
+export interface MarketSeriesResponse {
+  success: boolean;
+  data?: {
+    year: number;
+    granularity: MarketGranularity;
+    empty: boolean;
+    series: MarketSeriesDoc | null;
+    summary: {
+      latestPointLabel: string | null;
+      latestModalPrice: number | null;
+      latestQuantity: number | null;
+      pricePointCount: number;
+      quantityPointCount: number;
+      level: MarketSeriesLevel | null;
+    };
+    freshness: {
+      lastUpdated: string | null;
+      source: string;
+      taxonomyVersion?: string;
+    };
+  };
+  error?: string | null;
+}
+
+/**
  * Analytics Types
  */
 export type EventType =
@@ -1068,4 +1262,146 @@ export interface LikeRequest {
 export interface CropPlanRequest {
   userId: string;
   inputs: CropPlanInputs;
+}
+
+/**
+ * Agriculture Scheme Catalog (India.gov + MyScheme full scrape)
+ */
+export interface AgricultureSchemeOption {
+  value: string | number | null;
+  label: string;
+}
+
+export interface AgricultureSchemeReference {
+  title: string | null;
+  url: string | null;
+}
+
+export interface AgricultureSchemeFaq {
+  question: string | null;
+  answerMarkdown: string | null;
+  answerText: string | null;
+  answerRichText: unknown[];
+}
+
+export interface AgricultureSchemeProcessStep {
+  mode: string;
+  processMarkdown: string | null;
+  processText: string | null;
+  processRichText: unknown[];
+}
+
+export interface AgricultureSchemeCatalogRecord {
+  recordVersion: number;
+  schemeDocId: string;
+  slug: string | null;
+  title: string;
+  shortTitle: string | null;
+  ministry: string | null;
+  nodalDepartment: string | null;
+  level: AgricultureSchemeOption | null;
+  schemeFor: string | null;
+  dbtScheme: boolean | null;
+  categories: string[];
+  subCategories: string[];
+  tags: string[];
+  targetBeneficiaries: string[];
+  state: AgricultureSchemeOption | null;
+  openDate: string | null;
+  closeDate: string | null;
+  listing: {
+    title: string | null;
+    description: string | null;
+    beneficiaryState: string | null;
+    schemeCategory: string[];
+    tags: string[];
+    pageNumber: number | null;
+    positionOnPage: number | null;
+    searchUrl: string;
+  };
+  content: {
+    briefDescription: string | null;
+    detailedDescriptionMarkdown: string | null;
+    detailedDescriptionText: string | null;
+    detailedDescriptionRichText: unknown[];
+    exclusionsMarkdown: string | null;
+    exclusionsText: string | null;
+    benefitsMarkdown: string | null;
+    benefitsText: string | null;
+    benefitsRichText: unknown[];
+    benefitType: AgricultureSchemeOption | null;
+    references: AgricultureSchemeReference[];
+    schemeImageUrl: string | null;
+  };
+  eligibility: {
+    markdown: string | null;
+    text: string | null;
+    richText: unknown[];
+  };
+  documents: {
+    markdown: string | null;
+    text: string | null;
+    richText: unknown[];
+  };
+  applicationProcess: AgricultureSchemeProcessStep[];
+  faqs: AgricultureSchemeFaq[];
+  applicationChannels: Array<Record<string, unknown>>;
+  availableLanguages: string[];
+  searchText: string;
+  source: {
+    listingSource: string;
+    mySchemePage: string | null;
+    detailApi: string | null;
+    documentsApi: string | null;
+    faqApi: string | null;
+    applicationChannelApi: string | null;
+    scrapedAt: string;
+    scrapeRunId: string;
+  };
+  integrity: {
+    hasDetail: boolean;
+    hasDocuments: boolean;
+    hasFaqs: boolean;
+    hasApplicationChannels: boolean;
+    errors: string[];
+    rawTrimmedForFirestore?: boolean;
+  };
+  raw?: {
+    listing: Record<string, unknown> | null;
+    detailResponse: Record<string, unknown> | null;
+    documentsResponse: Record<string, unknown> | null;
+    faqsResponse: Record<string, unknown> | null;
+    applicationChannelsResponse: Record<string, unknown> | null;
+  };
+}
+
+export interface AgricultureSchemesApiResponse {
+  success: boolean;
+  data?: {
+    items: AgricultureSchemeCatalogRecord[];
+    pagination: {
+      page: number;
+      pageSize: number;
+      totalItems: number;
+      totalPages: number;
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+    };
+    facets: {
+      states: string[];
+      categories: string[];
+      ministries: string[];
+    };
+    filtersApplied: {
+      query: string;
+      state: string;
+      category: string;
+      ministry: string;
+      includeRaw: boolean;
+      sourcePreference: 'auto' | 'firestore' | 'local';
+    };
+    source: 'firestore' | 'local_file';
+    warning: string | null;
+  };
+  error?: string | null;
 }

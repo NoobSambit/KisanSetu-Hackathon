@@ -1,6 +1,6 @@
 # API Inventory
 
-Last Updated: 2026-02-13 (Satellite Right-Panel Consistency + Color Labels)
+Last Updated: 2026-02-14 (Agriculture Scheme Full-Catalog API Added)
 
 This file documents currently implemented HTTP routes under `app/api/`.
 
@@ -25,13 +25,14 @@ This file documents currently implemented HTTP routes under `app/api/`.
 | `GET` | `/api/schemes/saved` | Get saved scheme state | `userId` query required | `{ success, data: { savedSchemeIds, stateMap } }` | Reads Day 2 user state map |
 | `POST` | `/api/schemes/saved` | Toggle save-for-later state | `{ userId, schemeId, saved? }` | `{ success, data: { userId, schemeId, saved } }` | Defaults `saved=true` when omitted |
 | `POST` | `/api/schemes/checklist` | Update application checklist | `{ userId, schemeId, checklist, notes? }` | `{ success, data: { checklist, checklistProgress, ... } }` | Checklist is document key -> boolean map |
+| `GET` | `/api/schemes/agriculture` | Browse full agriculture scheme catalog (83-page scrape) | `page?`, `pageSize?`, `query?`, `state?`, `category?`, `ministry?`, `source?`, `includeRaw?` | `{ success, data: { items, pagination, facets, filtersApplied, source, warning } }` | Reads seeded `agricultureSchemeCatalog` when available; falls back to local scraped file |
 | `GET`/`POST` | `/api/satellite/ingest` | Run ingest or fetch history | query params for ingest, `action=history` for history | ingest: `{ success, data: { ingest, persistedSnapshotId } }`; history: `{ success, data: { history } }` | Supports `allowFallback` query flag + shared AOI source resolution (`query_bbox` -> `profile_land_geometry` -> `demo_fallback`) |
 | `GET`/`POST` | `/api/satellite/health` | Generate satellite health insight (Day 3/6) | AOI/date/cloud query params + `precisionMode?`, `useCache?`, `forceRefresh?`, `cacheTtlHours?` | `{ success, data: { health, metadata, dataSource } }` | Returns normalized score, baseline delta, zones, stress signals, recommendations, alerts, map overlay contract, source scene timestamp, and cache status |
 | `POST` | `/api/voice/stt` | Transcribe speech to text (Day 3) | multipart form: `audio?`, `language?`, `durationSeconds?`, `browserTranscript?` | `{ success, data: { transcript, provider, confidence, guardrails, fallback* } }` | Enforces size/duration/type guardrails with MIME normalization; auto-converts non-native whisper containers to WAV when ffmpeg is available; supports explicit fallback |
 | `POST` | `/api/voice/tts` | Synthesize text to speech (Day 3) | `{ text, language?, slow? }` | `{ success, data: { provider, audioBase64?, mimeType?, fallback* } }` | Local eSpeak path + browser synthesis fallback |
 | `POST` | `/api/voice/roundtrip` | Voice roundtrip in one API flow (Day 3) | multipart form: `audio?`, `browserTranscript?`, `language`, `ttsLanguage`, `assistantProvider?`, `userId?`, `sessionId?`, `slowSpeech?` | `{ success, data: { transcript, answer, answerMeta, tts, warnings } }` | `assistantProvider` supports `ollama` or `groq`; routes through same personalization service as text chat |
 | `GET` | `/api/weather` | Fetch weather intelligence | `city` OR `lat`+`lon`, optional `userId` | `{ success, data }` | Uses OpenWeather key when available, mock fallback otherwise |
-| `GET` | `/api/prices` | Fetch crop or market prices | `crop` OR `market`+`state`; optional `action=crops|markets`, `userId` | `{ success, data }` | Mock-first data currently |
+| `GET` | `/api/prices` | Fetch Agmarknet-backed market filters/cards/series | `action=filters|cards|series` + action-specific query params | `{ success, data, error }` | Reads `marketTaxonomy` + `marketSeries` seeded by offline ingestion |
 | `POST` | `/api/crop-plan` | Generate crop plan | `{ userId, inputs }` | `{ success, plan }` | Requires valid `inputs`; Groq path optional |
 | `POST` | `/api/disease/detect` | Predict disease from image | multipart form: `image`, optional `userId` | `{ success, prediction, confidence, treatment, ... }` | Enforces file type and 10MB limit |
 | `GET` | `/api/community/posts` | List community posts | optional `limit` | `{ success, posts, count }` | Ordered by recency |
@@ -49,6 +50,45 @@ This file documents currently implemented HTTP routes under `app/api/`.
 - If Firestore catalog is unavailable, it uses local seed fallback and sets `catalogSource` accordingly.
 - Response includes UI-driving metadata (`profileCompleteness`, `missingProfileInputs`, `catalogWarning`) in addition to recommendation cards.
 - Each recommendation item includes persisted user-state fields (`saved`, `checklist`, `documentReadinessScore`) used by `/api/schemes/saved` and `/api/schemes/checklist` writes.
+
+### Agriculture Full Catalog (`/api/schemes/agriculture`)
+
+- Purpose:
+  - Serve the complete agriculture schemes corpus scraped from:
+    - India.gov listing pages (`pagenumber=1..83`)
+    - per-scheme MyScheme detail/document/FAQ/application-channel APIs.
+- Source behavior:
+  - `source=local` (default):
+    - uses `data/schemes/agriculture_schemes_catalog.json` local dataset.
+  - `source=auto`:
+    - reads Firestore `agricultureSchemeCatalog` when seeded and non-empty
+    - falls back to local file `data/schemes/agriculture_schemes_catalog.json` with warning.
+  - `source=firestore`:
+    - strict Firestore read path (errors when unavailable).
+    - reads up to `1200` docs and is cached in-process for `10` minutes by `agricultureSchemeCatalogService`.
+  - `source=local`:
+    - strict local-file read path.
+- Query contract:
+  - `page`: positive integer (default `1`)
+  - `pageSize`: positive integer (default `15`, max `50`)
+  - `query`: free-text search against normalized searchable fields (`title`, `shortTitle`, `searchText`, ministry, nodal department)
+  - `state`: substring filter on scheme state label / beneficiary state
+  - `category`: substring filter on normalized category labels
+  - `ministry`: substring filter on ministry text
+  - `includeRaw`: `1|true` to return raw per-endpoint payload snapshots (default false).
+  - `source`: `auto|firestore|local`.
+- Success payload (200):
+  - `data.items[]`: normalized scheme records (raw field omitted unless `includeRaw=true`)
+  - `data.pagination`: `{ page, pageSize, totalItems, totalPages, hasNextPage, hasPreviousPage }`
+  - `data.facets`: `{ states[], categories[], ministries[] }`
+  - `data.filtersApplied`: echoes effective filter values
+  - `data.source`: `firestore` or `local_file`
+  - `data.warning`: non-null when auto mode falls back from Firestore.
+- Validation/error behavior:
+  - invalid numeric params -> `400`
+  - invalid `source` value -> `400`
+  - requesting page above available pages -> `400`
+  - unexpected runtime failures -> `500`.
 
 ### Satellite Ingest
 
@@ -157,10 +197,30 @@ This file documents currently implemented HTTP routes under `app/api/`.
   - common Groq failures are surfaced with actionable errors (missing key, invalid key, model not found, rate limits)
   - no silent provider fallback is applied when Groq is explicitly selected.
 
-### Weather and Prices
+### Weather API
 
-- These modules are intentionally resilient during development through mock-support paths.
-- They still return `success` and `error` conventions for stable frontend handling.
+- `/api/weather` still supports OpenWeather-backed responses with mock fallback when key/runtime is unavailable.
+- Route preserves `{ success, data, error }` shape for frontend compatibility.
+
+### Market Prices API (`/api/prices`)
+
+- Contract now uses action-based reads from Firestore market collections:
+  - `action=filters`
+    - returns taxonomy payload (`categories`, `commodities`, `states`, `districtsByState`, counts).
+  - `action=cards`
+    - query: `year`, `granularity`, optional `categoryId`, `commodityId`, `stateId`, `districtId`, `page`, `limit`.
+    - returns latest card snapshots with delta metrics and pagination object.
+  - `action=series`
+    - query: `year`, `granularity`, `commodityId`, `stateId`, `districtId` (all required IDs).
+    - returns full `pricePoints`, `quantityPoints`, summary, and freshness metadata.
+- Validation behavior:
+  - unsupported or missing `action` -> `400`.
+  - invalid granularity -> `400`.
+  - missing `commodityId/stateId/districtId` for `series` -> `400`.
+  - non-seeded combo for `series` returns `200` with `empty=true`.
+- Data source behavior:
+  - route reads seeded `marketTaxonomy/agmarknet_2025_v1` and `marketSeries/*`.
+  - taxonomy missing returns `404` with ingestion guidance.
 
 ### Community APIs
 

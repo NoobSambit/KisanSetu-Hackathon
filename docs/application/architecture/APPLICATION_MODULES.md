@@ -1,6 +1,6 @@
 # Application Modules
 
-Last Updated: 2026-02-13 (Satellite Right-Panel Consistency + Color Labels)
+Last Updated: 2026-02-14 (Schemes Route Simplification + Agriculture Scheme Full-Catalog Pipeline)
 
 This document defines module boundaries, responsibilities, dependencies, and key interfaces.
 
@@ -12,11 +12,12 @@ This document defines module boundaries, responsibilities, dependencies, and key
 | Farm Profile and Memory | Capture durable farm context and derive memory for personalization | `GET|POST|PATCH /api/farm-profile` | `farmProfiles`, `farmHistory`, `learnedPatterns` |
 | Saved Advice | Bookmark assistant outputs for future reference | `POST /api/advice/save` | `savedAdvice` |
 | Scheme Intelligence (Day 2) | Explainable scheme matching and user checklist state | `POST /api/schemes/seed`, `GET /api/schemes/recommendations`, `GET|POST /api/schemes/saved`, `POST /api/schemes/checklist` | `schemeCatalog`, `schemeRecommendations`, `schemeUserState` (+ fallbacks) |
+| Agriculture Scheme Catalog (Day 2 expansion) | Exhaustive agriculture scheme corpus ingestion + browsing | `GET /api/schemes/agriculture` | `agricultureSchemeCatalog` (optional seed target), local dataset file fallback |
 | Satellite Ingest (Day 2) | CDSE scene ingestion baseline for Day 3 | `GET|POST /api/satellite/ingest` | `satelliteHealthSnapshots` (+ fallback in `farmProfiles`) |
 | Satellite Health (Day 3/6) | Convert ingest output into dashboard-ready crop health signals and high-accuracy map overlays | `GET|POST /api/satellite/health` | `satelliteHealthCache` (+ fallback in `farmProfiles`) + live ingest context |
 | Voice Intelligence (Day 3) | STT/TTS and one-call voice roundtrip for assistant | `POST /api/voice/stt`, `POST /api/voice/tts`, `POST /api/voice/roundtrip` | Ephemeral temp files only (local runtime) |
 | Weather Intelligence | Current weather + farming advice | `GET /api/weather` | in-memory cache, optional analytics writes |
-| Market Prices | Crop/market price lookup and simple trends | `GET /api/prices` | in-memory cache, optional `priceChecks` writes |
+| Market Prices | Agmarknet-backed taxonomy + series browsing and analytics detail | `GET /api/prices?action=filters|cards|series` | `marketTaxonomy`, `marketSeries`, `marketIngestRuns` |
 | Disease Detection | Image-based disease prediction response | `POST /api/disease/detect` | optional `diseasePredictions`, analytics |
 | Crop Planner | AI-driven crop planning recommendations | `POST /api/crop-plan` | `cropPlans`, `analyticsEvents` |
 | Community | Posts, comments, replies, likes | community routes under `/api/community/*` | `communityPosts`, `communityComments`, `communityReplies` |
@@ -106,10 +107,47 @@ Sub-capabilities:
 - Frontend now consumes recommendation metadata payload (`profileCompleteness`, `missingProfileInputs`, `catalogWarning`) and updates state via live `saved/checklist` APIs instead of local-only mock state.
 - Checklist document keys are normalized to readable labels in UI and rendered with compact touch-friendly controls for low-clutter mobile usage.
 - Checklist container proportions are balanced against scheme summary content via responsive checklist grid layout and custom-sized checkbox indicators.
+- Dedicated recommendation page is removed; `/schemes` now consistently routes to full-catalog browsing while recommendation logic remains available via `/api/schemes/recommendations`.
 
 Reliability behavior:
 - Catalog and user-state fallbacks are implemented when Day 2 collections are permission-blocked.
 - Response includes catalog source and warnings when fallback is active.
+
+## Agriculture Scheme Catalog Module (Day 2 Expansion)
+
+Purpose:
+- Build and serve a complete agriculture-focused scheme corpus sourced from official listing + detail endpoints.
+
+Key files:
+- `scripts/scrape_agriculture_schemes.mjs`
+- `scripts/seed_agriculture_schemes.mjs`
+- `data/schemes/agriculture_schemes_catalog.json`
+- `data/schemes/agriculture_schemes_scrape_report.json`
+- `lib/services/agricultureSchemeCatalogService.ts`
+- `app/api/schemes/agriculture/route.ts`
+- `app/schemes/agriculture/page.tsx`
+
+Sub-capabilities:
+- Scrape all India.gov agriculture listing pages (`pagenumber=1..83`) and de-duplicate by slug.
+- Fetch every linked MyScheme detail page payload (details, documents, FAQs, application channels).
+- Normalize heterogeneous page sections into a shared schema while preserving raw endpoint payload snapshots per scheme.
+- Persist full dataset as local JSON for deterministic UI/API fallback even before Firestore seeding.
+- Optional Firestore seeding (`agricultureSchemeCatalog`) via dedicated script for production-like serving.
+- Paginated searchable browse UI with expandable all-section display:
+  - overview
+  - eligibility
+  - benefits
+  - documents
+  - process steps
+  - FAQs
+  - references
+  - application channels.
+
+Reliability behavior:
+- API source mode supports `auto`, `firestore`, and `local`.
+- Default route mode is `local` to avoid accidental high Firestore read consumption during browse-heavy usage.
+- `auto` mode attempts Firestore first and emits explicit fallback warning on local-file fallback.
+- Raw payload fields are excluded by default in API responses (`includeRaw=false`) to keep response size stable.
 
 ## Satellite Ingest Baseline Module (Day 2)
 
@@ -239,15 +277,27 @@ Notes:
 ## Market Prices Module
 
 Purpose:
-- Expose crop and market price lookups with simple trend metadata.
+- Provide exhaustive 2025 Agmarknet market browsing across taxonomy + geo levels with card snapshots and detailed series analytics.
 
 Key files:
 - `app/api/prices/route.ts`
-- `lib/services/priceService.ts`
+- `app/market-prices/page.tsx`
+- `lib/firebase/market.ts`
+- `scripts/ingest_agmarknet_2025.mjs`
 
 Notes:
-- Currently mock-first dataset strategy for MVP speed.
-- Designed for later integration with government market feeds.
+- Ingestion is offline/resumable and writes:
+  - `marketTaxonomy/{versionId}`
+  - `marketSeries/{seriesId}`
+  - `marketIngestRuns/{runId}`
+- `/api/prices` now exposes action-based reads:
+  - `filters` for taxonomy
+  - `cards` for paginated snapshot tiles
+  - `series` for full price/quantity points
+- `/market-prices` frontend now consumes live API data only (no mock path):
+  - filter bar (category, commodity, state, district, granularity)
+  - marketplace card grid
+  - detail modal with line chart + table + freshness metadata.
 
 ## Disease Detection Module
 

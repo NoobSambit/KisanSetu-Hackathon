@@ -49,17 +49,30 @@ KisanSetu is a modern web application that helps farmers get instant answers to 
 5. **Open your browser**
    Navigate to `http://localhost:3000`
 
-### Day 2 Utility Commands
+### Utility Commands
 
 ```bash
 # Seed Day 2 scheme catalog (writes to `schemeCatalog`; fallback path is retained as resilience)
 npm run seed:day2-schemes
+
+# Scrape full agriculture scheme corpus (India.gov pages 1..83 + MyScheme detail payloads)
+npm run scrape:agriculture-schemes
+
+# Seed full agriculture corpus into Firestore collection `agricultureSchemeCatalog`
+# (do this only when you explicitly want DB population)
+npm run seed:agriculture-schemes
 
 # Run Day 2 API smoke validation (requires dev server)
 npm run smoke:day2
 
 # Run Day 3 satellite + voice smoke validation (requires dev server)
 npm run smoke:day3
+
+# Day 4 Agmarknet 2025 ingestion (resumable exhaustive market data)
+npm run ingest:agmarknet-2025
+
+# Optional smoke run with limited combinations
+node scripts/ingest_agmarknet_2025.mjs --year=2025 --max-combos=50 --concurrency=4 --granularities=d,m,y
 ```
 
 ---
@@ -85,6 +98,16 @@ npm run smoke:day3
   - Inline prompts for missing profile fields
   - Save-for-later + application checklist flow
   - One-click official source links
+  - Recommendation engine remains available through API contracts (`/api/schemes/recommendations`, `/api/schemes/checklist`)
+
+- **📘 Day 2 Full Agriculture Scheme Catalog**
+  - Exhaustive scrape pipeline for India.gov agriculture listings (`pagenumber=1..83`)
+  - Per-scheme full content capture from MyScheme (details, eligibility, benefits, documents, FAQs, application channels)
+  - Normalized local dataset for deterministic fallback:
+    - `data/schemes/agriculture_schemes_catalog.json`
+    - `data/schemes/agriculture_schemes_scrape_report.json`
+  - Default Schemes route now opens full catalog:
+    - `/schemes` -> redirects to `/schemes/agriculture`
 
 - **🛰️ Day 2 Satellite Baseline**: CDSE/Sentinel-2 ingest bootstrap
   - Cloud-filtered scene retrieval for demo AOI
@@ -106,6 +129,18 @@ npm run smoke:day3
   - Supports major Indian languages: Hindi, Marathi, Bengali, Tamil, Telugu, Gujarati, Kannada, Malayalam, Punjabi, Urdu, Odia, Assamese (plus English)
   - Indic transcript script normalization for language-consistent rendering (for example Bengali selection rendered in Bengali script)
   - Explicit fallback warnings when local voice binaries are unavailable
+
+- **📈 Day 4 Agri-Market Data Platform (Baseline)**
+  - Agmarknet 2025 taxonomy + series ingestion pipeline with resume checkpoint support
+  - Firestore-backed market collections:
+    - `marketTaxonomy`
+    - `marketSeries`
+    - `marketIngestRuns`
+  - Replaced `/api/prices` with action contract:
+    - `action=filters`
+    - `action=cards`
+    - `action=series`
+  - Replaced `/market-prices` UI with filter-driven card grid + analytics detail modal (timeseries + table)
 
 - **📱 Responsive Design**: Works seamlessly on mobile, tablet, and desktop
 
@@ -141,13 +176,13 @@ KisanSetu/
 │   ├── schemes/           # Day 2 policy matcher UX
 │   ├── resources/         # Knowledge base
 │   └── page.tsx           # Home page
-├── data/                  # Seed datasets (e.g., Day 2 schemes)
+├── data/                  # Seed datasets and scraped corpora (e.g., Day 2 + full agriculture catalog)
 ├── components/            # Reusable UI components
 ├── lib/                   # Business logic & services
 │   ├── ai/               # LLM abstraction layer
 │   ├── services/         # Daywise business services
 │   └── firebase/         # Firebase services
-├── scripts/               # Smoke tests and seed scripts
+├── scripts/               # Smoke tests, scrapers, ingestion, and seed scripts
 ├── types/                 # TypeScript definitions
 ├── docs/
 │   ├── application/      # Comprehensive app documentation

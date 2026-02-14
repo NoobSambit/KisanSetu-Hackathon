@@ -1,5 +1,115 @@
 # Application Docs Changelog
 
+## 2026-02-14
+
+### Day 2 Scheme Intelligence Expansion: Full Agriculture Corpus + Browse API/UI
+- **Summary**: Added exhaustive agriculture scheme corpus ingestion and a dedicated browse contract/UI without requiring immediate DB seed execution.
+- **Changes**:
+  - Added `scripts/scrape_agriculture_schemes.mjs` for full crawl:
+    - India.gov listing pages `1..83`
+    - per-scheme MyScheme detail + documents + FAQs + application channels.
+  - Added normalized dataset + scrape coverage report outputs:
+    - `data/schemes/agriculture_schemes_catalog.json`
+    - `data/schemes/agriculture_schemes_scrape_report.json`
+  - Added optional Firestore seed script `scripts/seed_agriculture_schemes.mjs` targeting `agricultureSchemeCatalog` with document-size guard behavior.
+  - Added new source-aware catalog service and API:
+    - `lib/services/agricultureSchemeCatalogService.ts`
+    - `GET /api/schemes/agriculture` (`source=auto|firestore|local`, pagination/filter/search, optional raw payload inclusion).
+  - Added minimal full-catalog browse UI:
+    - `app/schemes/agriculture/page.tsx`
+    - linked from `app/schemes/page.tsx`.
+- **Interface/Contracts**:
+  - New endpoint contract:
+    - `GET /api/schemes/agriculture`
+    - success payload includes `items`, `pagination`, `facets`, `filtersApplied`, `source`, `warning`
+    - validation errors return `400` for bad page/source values.
+- **Data Impact**:
+  - Added local corpus files for deterministic non-DB serving and offline documentation/testing.
+  - Added optional target collection `agricultureSchemeCatalog` for seeded DB-backed serving.
+  - Current corpus stats: `825` records, max serialized record size ~`213KB` (within Firestore 1MB/doc limit).
+- **Runtime/Ops Impact**:
+  - New scripts added to package commands:
+    - `npm run scrape:agriculture-schemes`
+    - `npm run seed:agriculture-schemes`
+  - API auto mode explicitly warns when Firestore is unavailable/empty and falls back to local dataset.
+- **Updated Docs**:
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY2_PROGRESS_LOG.md`
+  - `docs/application/README.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/overview/SCOPE_BASELINE.md`
+  - `README.md`
+- **Validation**:
+  - `npm run scrape:agriculture-schemes`: passed (`825/825` details fetched).
+  - `npx tsc --noEmit`: passed.
+  - `npm run build`: passed.
+  - API contract checks:
+    - success: `/api/schemes/agriculture?page=1&pageSize=5&query=farmer` -> `200`
+    - error: `/api/schemes/agriculture?page=9999&pageSize=20` -> `400`
+    - error: `/api/schemes/agriculture?source=badsource` -> `400`.
+
+### Schemes Route Simplification (Recommendation Page Removed)
+- **Summary**: Removed the temporary recommendation route so Schemes has one canonical UI path (`/schemes` -> `/schemes/agriculture`).
+- **Changes**:
+  - `/schemes` now redirects to `/schemes/agriculture`.
+  - removed `app/schemes/recommendations/page.tsx`.
+  - removed recommendation-page cross-links from the agriculture catalog screen.
+- **Updated Docs**:
+  - `README.md`
+  - `docs/application/README.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/overview/SCOPE_BASELINE.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/hackathon/DAY2_PROGRESS_LOG.md`
+- **Validation**:
+  - `HEAD /schemes` -> `307` redirect to `/schemes/agriculture`
+  - `HEAD /schemes/agriculture` -> `200`
+  - `HEAD /schemes/recommendations` -> `404`.
+
+### Day 4 Market Data Foundation: Agmarknet 2025 Ingestion + `/market-prices` Contract/UI Replacement
+- **Summary**: Added the full Day 4 market-data foundation and baseline UX stack for Agmarknet-backed 2025 browsing.
+- **Changes**:
+  - Added new ingestion workflow documentation for `scripts/ingest_agmarknet_2025.mjs` (taxonomy fetch, exhaustive combo traversal, checkpoint resume).
+  - Added Firestore collection documentation for:
+    - `marketTaxonomy`
+    - `marketSeries`
+    - `marketIngestRuns`
+  - Updated API contract documentation for `/api/prices` action-based responses:
+    - `filters`
+    - `cards`
+    - `series`
+  - Updated scope/module docs to reflect replaced `/market-prices` live data flow and Day 4 Phase 1/2 progress status.
+  - Added Day 4 validation evidence (ingest smoke, resume checkpoint, source-vs-db checks, prices API success/error checks).
+- **Interface/Contracts**:
+  - `/api/prices` is no longer crop/market mock query-based; now action-based and Firestore-backed.
+  - Frontend contract now consumes taxonomy/cards/series payloads only.
+- **Data Impact**:
+  - New market collections and deterministic `seriesId` persistence strategy documented.
+  - Empty combination handling documented as run-metadata totals (non-persisted series).
+- **Runtime/Ops Impact**:
+  - Introduced offline ingestion command and resume flow requirements.
+  - Documented bounded cards scan behavior and future index-optimization gap.
+- **Updated Docs**:
+  - `docs/prd/PRD_PROGRESS_TRACKER.md`
+  - `docs/prd/APPLICATION_WIDE_UPDATES.md`
+  - `docs/hackathon/DAY4_PROGRESS_LOG.md`
+  - `docs/application/api/API_INVENTORY.md`
+  - `docs/application/architecture/APPLICATION_MODULES.md`
+  - `docs/application/data/DATA_ARCHITECTURE.md`
+  - `docs/application/overview/SCOPE_BASELINE.md`
+  - `docs/application/operations/QUALITY_TESTING_STRATEGY.md`
+  - `docs/application/README.md`
+  - `README.md`
+- **Validation**:
+  - `npx tsc --noEmit`: passed
+  - `npm run build`: passed
+  - Ingest smoke + resume + prices API success/error matrix recorded in Day 4 logs.
+
 ## 2026-02-13
 
 ### Satellite Right-Panel Consistency + Color Labels

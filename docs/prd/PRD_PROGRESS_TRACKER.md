@@ -1,6 +1,6 @@
 # PRD Progress Tracker
 
-Last Updated: 2026-02-13 15:26 IST
+Last Updated: 2026-02-14 04:48 IST
 
 Status values: `done`, `in_progress`, `planned`, `blocked`
 
@@ -11,14 +11,14 @@ Status values: `done`, `in_progress`, `planned`, `blocked`
 | Day 1 | Phase 1 - Local LLM Infra | Local Ollama assistant with Qwen 2.5 7B | done | Team | `/api/ai/health`, benchmark logs |
 | Day 1 | Phase 2 - Farm Memory | Profile + memory + pattern extraction | done | Team | `/api/farm-profile`, smoke tests |
 | Day 1 | Phase 3 - Context-Aware AI | Personalized responses from farm memory | done | Team | `/api/ai/query` personalization |
-| Day 2 | Phase 1 - Scheme Intelligence Engine | Eligibility scoring + scheme dataset | done | Team | `data/schemes/day2_seed_schemes.json` (34), `npm run seed:day2-schemes` |
-| Day 2 | Phase 2 - Scheme Recommendation UX | Explainable recommendations + actions | done | Team | `/schemes`, `/api/schemes/checklist`, `scripts/day2_smoke_test.sh` |
+| Day 2 | Phase 1 - Scheme Intelligence Engine | Eligibility scoring + scheme dataset | done | Team | `data/schemes/day2_seed_schemes.json` (34), `data/schemes/agriculture_schemes_catalog.json` (825), `npm run seed:day2-schemes`, `npm run scrape:agriculture-schemes` |
+| Day 2 | Phase 2 - Scheme Recommendation UX | Explainable recommendations + actions | done | Team | `/api/schemes/recommendations`, `/api/schemes/checklist`, `scripts/day2_smoke_test.sh` |
 | Day 2 | Phase 3 - Satellite Setup | Sentinel data pipeline bootstrap | done | Team | `/api/satellite/ingest`, `/api/satellite/ingest?action=history` |
 | Day 3 | Phase 1 - Satellite Health AI | NDVI-based health insights | done | Team | `/api/satellite/health`, `lib/services/satelliteHealthService.ts`, dashboard health card |
 | Day 3 | Phase 2 - Voice AI Backend | STT/TTS pipeline | done | Team | `/api/voice/stt`, `/api/voice/tts`, `/api/voice/roundtrip`, `lib/services/voiceService.ts` |
 | Day 3 | Phase 3 - Voice Frontend | Voice-first assistant UX | done | Team | `app/assistant/page.tsx`, transcript review + playback controls, `scripts/day3_smoke_test.sh` |
-| Day 4 | Phase 1 - Price Forecasting | 7/30/90-day predictions | planned | Team | Day 4 PRD checklist |
-| Day 4 | Phase 2 - Forecast UX | Visual forecast + sell timing | planned | Team | Day 4 PRD checklist |
+| Day 4 | Phase 1 - Price Forecasting | 7/30/90-day predictions | in_progress | Team | `scripts/ingest_agmarknet_2025.mjs`, `marketTaxonomy/marketSeries/marketIngestRuns` seeding, `node scripts/ingest_agmarknet_2025.mjs --year=2025 --max-combos=50`, resume checkpoint evidence (`runId=agmarknet_y2025_1771016530612`) |
+| Day 4 | Phase 2 - Forecast UX | Visual forecast + sell timing | in_progress | Team | `/api/prices?action=filters|cards|series`, `app/market-prices/page.tsx` replacement, `npx tsc --noEmit`, `npm run build`, API success/error checks |
 | Day 4 | Phase 3 - Community Intelligence | Knowledge extraction from posts | planned | Team | Day 4 PRD checklist |
 | Day 5 | Phase 1 - WhatsApp Layer | Conversational channel integration | planned | Team | Day 5 PRD checklist |
 | Day 5 | Phase 2 - Document Assistant | OCR + assisted form filling | planned | Team | Day 5 PRD checklist |
@@ -40,6 +40,8 @@ Status values: `done`, `in_progress`, `planned`, `blocked`
 
 ## Day 2 Evidence Snapshot
 - Seed command: `npm run seed:day2-schemes` (primary `schemeCatalog` write succeeded with 34 records)
+- Full-catalog scrape command: `npm run scrape:agriculture-schemes` -> listing pages `83/83`, unique slugs `825`, detail success `825`, detail failures `0`, output at `data/schemes/agriculture_schemes_catalog.json`
+- Full-catalog report: `data/schemes/agriculture_schemes_scrape_report.json` (`recordsWithFaqs=825`, `recordsWithDocuments=825`, `recordsWithEligibility=825`, `recordsWithApplicationProcess=825`)
 - Smoke command: `bash scripts/day2_smoke_test.sh`
 - Type-check: `npx tsc --noEmit`
 - Build-check: `npm run build`
@@ -55,6 +57,25 @@ Status values: `done`, `in_progress`, `planned`, `blocked`
 - Voice roundtrip validation: `POST /api/voice/roundtrip` -> transcript + personalized answer + TTS metadata in one API flow.
 - Voice local runtime validation: `POST /api/voice/stt` with WAV input and no transcript fallback -> `provider=whisper_cpp`.
 - Multilingual validation: STT API accepted `13` configured languages (`hi-IN`, `en-IN`, `mr-IN`, `bn-IN`, `ta-IN`, `te-IN`, `gu-IN`, `kn-IN`, `ml-IN`, `pa-IN`, `ur-IN`, `or-IN`, `as-IN`).
+
+## Day 4 Evidence Snapshot (Phase 1/2 In Progress)
+- Type-check: `npx tsc --noEmit`
+- Build-check: `npm run build`
+- Ingest smoke run: `node scripts/ingest_agmarknet_2025.mjs --year=2025 --max-combos=50 --concurrency=4 --granularities=d,m,y` -> attempted `50`, stored `3`, empty `47`, failed `0`.
+- Resume checkpoint run: interrupted run `agmarknet_y2025_1771016530612` resumed via `--resume --run-id=agmarknet_y2025_1771016530612` with cursor recovery (`30 -> 1450`) and no deterministic-id duplication drift (`y2025_{granularity}_0_0_451` remains exactly 3 docs).
+- Data correctness spot checks (source vs DB, all levels, both metrics, `d/m/y`):
+  - all-India: `state_id=0,district_id=0,commodity_id=451`
+  - state: `state_id=23,district_id=0,commodity_id=451`
+  - district: `state_id=23,district_id=432,commodity_id=451`
+  - result: `price=OK`, `quantity=OK` for all 9 combinations (tolerance-aware float comparison).
+- Prices API contract checks (`next dev -p 3110`):
+  - `action=filters` -> `200`
+  - `action=cards` pagination -> `200`
+  - `action=cards` with `stateId=23&districtId=432` shrank results (`4 -> 1`)
+  - `action=series` success (`commodityId=451,stateId=0,districtId=0`) -> `200`
+  - `action=series` empty (`commodityId=451,stateId=1,districtId=1`) -> `200` with `empty=true`
+  - invalid granularity -> `400`
+  - missing required IDs -> `400`
 
 ## Day 6 Evidence Snapshot (Phase 1 In Progress)
 - Type-check: `npx tsc --noEmit`
@@ -156,6 +177,9 @@ Status values: `done`, `in_progress`, `planned`, `blocked`
   - Invalid bbox resilience check (`bbox=1,2,3`) -> `200`, invalid bbox ignored and AOI source remains `profile_land_geometry`.
 
 ## Cross-Day Notes
+- 2026-02-14: Simplified schemes UX routing so `/schemes` now redirects to `/schemes/agriculture` as the only active schemes page; dedicated recommendation page removed.
+- 2026-02-14: Expanded Day 2 scheme intelligence with full agriculture corpus ingestion (`83` listing pages, `825` schemes) and added browse API/UI (`/api/schemes/agriculture`, `/schemes/agriculture`) plus optional Firestore seed path (`agricultureSchemeCatalog`).
+- 2026-02-14: Implemented Agmarknet 2025 exhaustive market ingestion + `/market-prices` replacement baseline (new ingestion script, new Firestore market collections, new `/api/prices` contract, and marketplace-style UI with analytics detail panel) to progress Day 4 Phase 1/2.
 - 2026-02-13: Hardened `/satellite` refresh trust behavior by defaulting refresh to live-only and preserving previously loaded results if live refresh fails; fallback sampling now requires explicit user action (`Refresh With Fallback`).
 - 2026-02-13: Fixed intermittent Next.js dev/runtime manifest ENOENT failures by isolating dev/build output directories (`NEXT_DIST_DIR=.next/dev` for dev and `.next/build` for build/start), preventing `.next` artifact collisions under parallel workflows.
 - 2026-02-13: Fixed land-geometry persistence path by making farm profile map-boundary the single source of truth (no manual acreage input), normalizing saved area/center from geometry, and enforcing geometry-required profile saves before satellite analysis.

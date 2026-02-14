@@ -1,0 +1,103 @@
+{
+  "runId": "agriculture_schemes_1771021378062",
+  "startedAt": "2026-02-13T22:22:58.062Z",
+  "finishedAt": "2026-02-13T22:23:50.047Z",
+  "durationMs": 51985,
+  "params": {
+    "startPage": 1,
+    "endPage": 83,
+    "pageSize": 10,
+    "detailConcurrency": 6,
+    "language": "en",
+    "maxSchemes": null
+  },
+  "counts": {
+    "listingPagesAttempted": 83,
+    "listingPagesSucceeded": 83,
+    "listingPagesFailed": 0,
+    "listingRecordsCollected": 825,
+    "uniqueSlugs": 825,
+    "schemesProcessed": 825,
+    "detailSuccess": 825,
+    "detailFailure": 0,
+    "recordsWithFaqs": 825,
+    "recordsWithDocuments": 825,
+    "recordsWithApplicationChannels": 6,
+    "recordsWithEligibility": 825,
+    "recordsWithApplicationProcess": 825
+  },
+  "listingFailures": [],
+  "detailFailures": [],
+  "structureProfile": {
+    "languages": {
+      "en": 825
+    },
+    "localizedKeys": {
+      "basicDetails": 825,
+      "schemeContent": 825,
+      "applicationProcess": 825,
+      "schemeDefinitions": 825,
+      "eligibilityCriteria": 825
+    },
+    "basicDetailKeys": {
+      "dbtScheme": 825,
+      "tags": 825,
+      "schemeName": 825,
+      "schemeShortTitle": 825,
+      "level": 825,
+      "schemeCategory": 825,
+      "schemeSubCategory": 824,
+      "schemeOpenDate": 825,
+      "targetBeneficiaries": 822,
+      "schemeFor": 811,
+      "state": 776,
+      "schemeType": 223,
+      "nodalMinistryName": 298,
+      "nodalDepartmentName": 825,
+      "otherMinistryName": 274,
+      "otherDepartmentNames": 274,
+      "implementingAgency": 293,
+      "schemeCloseDate": 133
+    },
+    "schemeContentKeys": {
+      "references": 825,
+      "schemeImageUrl": 825,
+      "briefDescription": 825,
+      "detailedDescription_md": 825,
+      "benefits_md": 785,
+      "exclusions_md": 785,
+      "detailedDescription": 825,
+      "benefitTypes": 825,
+      "benefits": 825,
+      "exclusions": 320
+    },
+    "eligibilityKeys": {
+      "eligibilityDescription_md": 825,
+      "eligibilityDescription": 825
+    },
+    "documentsKeys": {
+      "documents_required": 825,
+      "documentsRequired_md": 781
+    },
+    "faqEntryKeys": {
+      "question": 8452,
+      "answer": 8452,
+      "answer_md": 8452
+    },
+    "applicationChannelKeys": {
+      "applicationName": 7,
+      "applicationUrl": 7,
+      "applicationLogo": 7
+    },
+    "applicationModes": {
+      "Online": 377,
+      "Offline": 487,
+      "Online - via CSC": 41
+    },
+    "optionalSectionCoverage": {
+      "faqs": 825,
+      "applicationProcess": 825,
+      "applicationChannel": 6
+    }
+  }
+}

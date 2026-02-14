@@ -1,0 +1,186 @@
+
+> kisansetu@0.1.0 build
+> NEXT_DIST_DIR=.next/build next build
+
+   ▲ Next.js 15.5.6
+   - Environments: .env.local
+   - Experiments (use with caution):
+     ⨯ devtoolSegmentExplorer
+
+   Creating an optimized production build ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+Failed to compile.
+
+./app/globals.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+Error: Cannot find module '@tailwindcss/forms'
+Require stack:
+- /home/noobsambit/Documents/KisanSetu/tailwind.config.ts
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1453:15)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/server/require-hook.js:57:36
+    at require.resolve (node:internal/modules/helpers:163:19)
+    at _resolve (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:246378)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249092)
+    at /home/noobsambit/Documents/KisanSetu/tailwind.config.ts:53:5
+    at evalModule (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:251913)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249841)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:53:30
+    at loadConfig (/home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:55:6)
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./app/globals.css
+./app/globals.css
+
+./node_modules/leaflet-draw/dist/leaflet.draw.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./node_modules/leaflet-draw/dist/leaflet.draw.css
+Error: Cannot find module '@tailwindcss/forms'
+Require stack:
+- /home/noobsambit/Documents/KisanSetu/tailwind.config.ts
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1453:15)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/server/require-hook.js:57:36
+    at require.resolve (node:internal/modules/helpers:163:19)
+    at _resolve (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:246378)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249092)
+    at /home/noobsambit/Documents/KisanSetu/tailwind.config.ts:53:5
+    at evalModule (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:251913)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249841)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:53:30
+    at loadConfig (/home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:55:6)
+
+Import trace for requested module:
+./node_modules/leaflet-draw/dist/leaflet.draw.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./node_modules/leaflet-draw/dist/leaflet.draw.css
+./node_modules/leaflet-draw/dist/leaflet.draw.css
+./components/FarmAreaSelector.tsx
+./app/farm-profile/page.tsx
+
+./node_modules/leaflet/dist/leaflet.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./node_modules/leaflet/dist/leaflet.css
+Error: Cannot find module '@tailwindcss/forms'
+Require stack:
+- /home/noobsambit/Documents/KisanSetu/tailwind.config.ts
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1453:15)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/server/require-hook.js:57:36
+    at require.resolve (node:internal/modules/helpers:163:19)
+    at _resolve (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:246378)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249092)
+    at /home/noobsambit/Documents/KisanSetu/tailwind.config.ts:53:5
+    at evalModule (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:251913)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249841)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:53:30
+    at loadConfig (/home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:55:6)
+
+Import trace for requested module:
+./node_modules/leaflet/dist/leaflet.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./node_modules/leaflet/dist/leaflet.css
+./node_modules/leaflet/dist/leaflet.css
+./components/SatelliteHealthMap.tsx
+./app/satellite/page.tsx
+
+./app/globals.css
+Error: Cannot find module '@tailwindcss/forms'
+Require stack:
+- /home/noobsambit/Documents/KisanSetu/tailwind.config.ts
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1453:15)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/server/require-hook.js:57:36
+    at require.resolve (node:internal/modules/helpers:163:19)
+    at _resolve (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:246378)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249092)
+    at /home/noobsambit/Documents/KisanSetu/tailwind.config.ts:53:5
+    at evalModule (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:251913)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249841)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:53:30
+    at loadConfig (/home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:55:6)
+    at tryRunOrWebpackError (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:316119)
+    at __webpack_require_module__ (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:131532)
+    at __nested_webpack_require_161494__ (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:130967)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:131824
+    at symbolIterator (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+    at done (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/neo-async/async.js:1:14824)
+    at Hook.eval [as callAsync] (eval at create (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:14:9224), <anonymous>:15:1)
+    at Hook.CALL_ASYNC_DELEGATE [as _callAsync] (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:14:6378)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:130687
+    at symbolIterator (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/neo-async/async.js:1:14402)
+-- inner error --
+Error: Cannot find module '@tailwindcss/forms'
+Require stack:
+- /home/noobsambit/Documents/KisanSetu/tailwind.config.ts
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1453:15)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/server/require-hook.js:57:36
+    at require.resolve (node:internal/modules/helpers:163:19)
+    at _resolve (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:246378)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249092)
+    at /home/noobsambit/Documents/KisanSetu/tailwind.config.ts:53:5
+    at evalModule (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:251913)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249841)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:53:30
+    at loadConfig (/home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:55:6)
+    at Object.<anonymous> (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!/home/noobsambit/Documents/KisanSetu/app/globals.css:1:7)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:962717
+    at Hook.eval [as call] (eval at create (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:14:9002), <anonymous>:7:1)
+    at Hook.CALL_DELEGATE [as _call] (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:14:6272)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:131565
+    at tryRunOrWebpackError (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:316073)
+    at __webpack_require_module__ (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:131532)
+    at __nested_webpack_require_161494__ (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:130967)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:131824
+    at symbolIterator (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+
+Generated code for /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!/home/noobsambit/Documents/KisanSetu/app/globals.css
+
+Import trace for requested module:
+./app/globals.css
+
+./node_modules/leaflet-draw/dist/leaflet.draw.css
+Error: Cannot find module '@tailwindcss/forms'
+Require stack:
+- /home/noobsambit/Documents/KisanSetu/tailwind.config.ts
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1453:15)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/server/require-hook.js:57:36
+    at require.resolve (node:internal/modules/helpers:163:19)
+    at _resolve (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:246378)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249092)
+    at /home/noobsambit/Documents/KisanSetu/tailwind.config.ts:53:5
+    at evalModule (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:251913)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249841)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:53:30
+    at loadConfig (/home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:55:6)
+    at tryRunOrWebpackError (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:316119)
+    at __webpack_require_module__ (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:131532)
+    at __nested_webpack_require_161494__ (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:130967)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:131824
+    at symbolIterator (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+    at done (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/neo-async/async.js:1:14824)
+    at Hook.eval [as callAsync] (eval at create (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:14:9224), <anonymous>:15:1)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:130687
+    at symbolIterator (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/neo-async/async.js:1:14402)
+    at timesSync (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/neo-async/async.js:1:5027)
+-- inner error --
+Error: Cannot find module '@tailwindcss/forms'
+Require stack:
+- /home/noobsambit/Documents/KisanSetu/tailwind.config.ts
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1453:15)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/server/require-hook.js:57:36
+    at require.resolve (node:internal/modules/helpers:163:19)
+    at _resolve (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:246378)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249092)
+    at /home/noobsambit/Documents/KisanSetu/tailwind.config.ts:53:5
+    at evalModule (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:251913)
+    at jiti (/home/noobsambit/Documents/KisanSetu/node_modules/jiti/dist/jiti.js:1:249841)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:53:30
+    at loadConfig (/home/noobsambit/Documents/KisanSetu/node_modules/tailwindcss/lib/lib/load-config.js:55:6)
+    at Object.<anonymous> (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!/home/noobsambit/Documents/KisanSetu/node_modules/leaflet-draw/dist/leaflet.draw.css:1:7)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:962717
+    at Hook.eval [as call] (eval at create (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:14:9002), <anonymous>:7:1)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:131565
+    at tryRunOrWebpackError (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:316073)
+    at __webpack_require_module__ (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:131532)
+    at __nested_webpack_require_161494__ (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:130967)
+    at /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/webpack/bundle5.js:29:131824
+    at symbolIterator (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+    at done (/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/compiled/neo-async/async.js:1:14824)
+
+Generated code for /home/noobsambit/Documents/KisanSetu/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!/home/noobsambit/Documents/KisanSetu/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!/home/noobsambit/Documents/KisanSetu/node_modules/leaflet-draw/dist/leaflet.draw.css
+
+Import trace for requested module:
+./node_modules/leaflet-draw/dist/leaflet.draw.css
+./components/FarmAreaSelector.tsx
+./app/farm-profile/page.tsx
+
+
+> Build failed because of webpack errors

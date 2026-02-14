@@ -1,7 +1,7 @@
 # KisanSetu Application Documentation
 
-Version: 2.2.20
-Last Updated: 2026-02-13 (Satellite Right-Panel Consistency + Color Labels)
+Version: 2.4.0
+Last Updated: 2026-02-14 (Schemes Route Simplification + Day 2 Agriculture Full Catalog Expansion)
 Status: Active Source of Truth
 
 This directory is the canonical technical documentation for KisanSetu.
@@ -9,6 +9,40 @@ It is structured for fast navigation during hackathon execution and for handoff 
 
 ## Recent Sync Highlights
 
+- Added exhaustive agriculture scheme corpus pipeline:
+  - new scraper: `scripts/scrape_agriculture_schemes.mjs`
+  - covers India.gov agriculture listing pages `1..83` (`825` unique slugs in current run)
+  - fetches per-scheme MyScheme detail + documents + FAQs + application channels
+  - writes normalized schema + coverage report:
+    - `data/schemes/agriculture_schemes_catalog.json`
+    - `data/schemes/agriculture_schemes_scrape_report.json`.
+- Added optional Firestore seeding pipeline for full agriculture corpus:
+  - `scripts/seed_agriculture_schemes.mjs`
+  - target collection: `agricultureSchemeCatalog`
+  - automatic raw-payload trimming for near-limit Firestore document sizes.
+- Added new full-catalog API + UI browse surface:
+  - `GET /api/schemes/agriculture` (pagination, search, filters, `source=auto|firestore|local`, optional `includeRaw`)
+  - new page: `/schemes/agriculture` (minimal, accessible, expandable full-section rendering)
+  - `/schemes` now routes to full-catalog browse mode by default.
+  - dedicated Day 2 recommendation page removed; recommendation engine remains API-backed.
+- Added exhaustive Agmarknet 2025 ingestion pipeline:
+  - new resumable script: `scripts/ingest_agmarknet_2025.mjs`
+  - full matrix traversal across categories, commodities, states, districts, granularities (`d/m/y`), and metrics (`price/quantity`)
+  - source-required browser-like headers for `POST /api/prices` and `POST /api/quantities`
+  - checkpoint + totals persistence in `marketIngestRuns`.
+- Added Firestore market collections for Day 4:
+  - `marketTaxonomy/{versionId}` (`agmarknet_2025_v1`)
+  - `marketSeries/{seriesId}` (non-empty deterministic series docs)
+  - `marketIngestRuns/{runId}` (run config, totals, checkpoint, errors).
+- Replaced `/api/prices` contract in-place:
+  - `action=filters` for taxonomy payload
+  - `action=cards` for paginated card snapshots with deltas
+  - `action=series` for detailed price/quantity time-series retrieval.
+- Replaced `/market-prices` page with live Agmarknet-backed marketplace UX:
+  - filter bar (category, commodity, state, district, granularity)
+  - metric toggle (`Price`/`Quantity`)
+  - card grid with trend deltas
+  - detail analytics modal (timeseries + tabular points + freshness metadata).
 - Added high-accuracy satellite map mode on `/api/satellite/health`:
   - default request mode is now `precisionMode=high_accuracy` with `useCache=true` and `cacheTtlHours=24`.
   - response can return `health.mapOverlay.strategy='ndvi_raster'` with Process API NDVI image overlay.

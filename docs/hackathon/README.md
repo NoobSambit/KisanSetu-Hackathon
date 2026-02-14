@@ -13,6 +13,7 @@ This folder keeps planning and execution artifacts out of the code root while pr
 - `DAY1_PROGRESS_LOG.md`
 - `DAY2_PROGRESS_LOG.md`
 - `DAY3_PROGRESS_LOG.md`
+- `DAY4_PROGRESS_LOG.md`
 - `DAY6_PROGRESS_LOG.md`
 
 ## Notes

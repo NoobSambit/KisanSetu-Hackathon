@@ -1,6 +1,6 @@
 # Scope Baseline
 
-Last Updated: 2026-02-13 (Satellite Page Navigation Consolidation)
+Last Updated: 2026-02-14 (Schemes Route Simplification + Day 2 Agriculture Full Catalog Expansion)
 
 This file defines what is implemented now, what is planned next, and what is explicitly out of scope for the current hackathon cycle.
 
@@ -10,7 +10,8 @@ This file defines what is implemented now, what is planned next, and what is exp
   - Day 1 phases: done
   - Day 2 phases: done
   - Day 3 phases: done
-  - Day 4 and Day 5 phases: planned
+  - Day 4 Phase 1/2: in progress
+  - Day 5 phases: planned
   - Day 6 Phase 1: in progress
 - Canonical progress source:
   - `docs/prd/PRD_PROGRESS_TRACKER.md`
@@ -37,7 +38,7 @@ This file defines what is implemented now, what is planned next, and what is exp
   - explainable rule-based eligibility scoring
   - missing-input detection and profile completeness scoring
   - central/state duplicate overlap detection
-- Policy matcher UX (`/schemes`):
+- Policy matcher engine + APIs:
   - top-priority recommendation cards
   - save-for-later
   - document checklist and readiness score
@@ -45,6 +46,15 @@ This file defines what is implemented now, what is planned next, and what is exp
 - Scheme data pipeline:
   - seeded Day 2 catalog (34 detailed schemes)
   - API route and script-based seed paths
+  - full agriculture corpus scrape pipeline:
+    - `83` listing pages (`pagenumber=1..83`)
+    - `825` unique scheme slugs captured
+    - per-scheme MyScheme detail/document/FAQ/application-channel payload ingestion
+    - normalized common schema output at `data/schemes/agriculture_schemes_catalog.json`
+- full-catalog browse API + UI:
+  - `GET /api/schemes/agriculture`
+  - `/schemes/agriculture` paginated search/filter view with expandable all-section content
+  - `/schemes` route now redirects to full catalog by default; dedicated recommendation page removed
 - Satellite setup baseline:
   - CDSE OAuth token flow
   - cloud-filtered Sentinel-2 scene retrieval
@@ -54,10 +64,30 @@ This file defines what is implemented now, what is planned next, and what is exp
 ### Existing Parallel Feature Tracks (Pre-Day-3 Roadmap, Already Present In Code)
 
 - Weather intelligence API and page (OpenWeather key optional, mock fallback available)
-- Market price intelligence API and page (mock-first data)
+- Market price intelligence API and page (Agmarknet-backed 2025 ingestion + live Firestore reads)
 - Disease detection API and page (mock predictor + validation guards)
 - Crop planner API and page (Groq optional)
 - Community and admin APIs/pages (foundation present)
+
+### Day 4: Market Data Foundation + Prediction UX Baseline (In Progress)
+
+- Agmarknet 2025 ingestion pipeline:
+  - exhaustive taxonomy ingestion (categories/commodities/states/districts)
+  - exhaustive combo traversal (`all_india`, `state`, `district` x `d/m/y` x `price/quantity`)
+  - resumable checkpointed ingestion with run metadata in Firestore.
+- Data collections added:
+  - `marketTaxonomy`
+  - `marketSeries`
+  - `marketIngestRuns`
+- `/api/prices` contract replaced with:
+  - `action=filters`
+  - `action=cards`
+  - `action=series`
+- `/market-prices` UI replaced with:
+  - marketplace card grid
+  - category/commodity/state/district filters
+  - metric + granularity toggles
+  - analytics detail modal (timeseries + table + freshness).
 
 ### Day 3: Satellite Intelligence + Voice Assistant
 
@@ -96,8 +126,8 @@ This file defines what is implemented now, what is planned next, and what is exp
 
 ### Day 4
 
-- Price forecasting (7/30/90 day windows)
-- Forecast-oriented UI and actionability
+- Forecast model training/inference (7/30/90 day windows) on top of seeded market series
+- Forecast-specific recommendation logic (`best sell window`)
 - Community intelligence extraction and summarization
 
 ### Day 5
@@ -114,7 +144,7 @@ This file defines what is implemented now, what is planned next, and what is exp
 
 ## Out Of Scope (Current Window)
 
-- Enterprise-grade policy ingestion automation for all Indian schemes
+- Enterprise-grade policy ingestion automation for all India.gov categories (agriculture corpus is implemented; non-agriculture categories remain out of current scope)
 - High-scale historical satellite warehouse
 - Production-grade multi-tenant security model for all modules
 - Paid-only data providers or paid-only AI providers
@@ -129,10 +159,10 @@ This file defines what is implemented now, what is planned next, and what is exp
 
 - Limited route-level authorization on several server APIs; current protection relies heavily on client-side guarded pages plus Firestore rules.
 - Unit and integration tests are still script-heavy; deeper automated test suites are pending.
-- Some feature tracks (weather/prices/disease/community) still use mock-heavy data paths.
+- Some feature tracks (disease/community) still use mock-heavy data paths.
 
 ## Immediate Next-Scope Focus
 
-1. Start Day 4 price forecasting service and lock baseline data contract for 7/30/90 day windows.
-2. Expand automated checks for voice provider non-fallback mode once local binaries are installed.
+1. Implement Day 4 forecast model service (`7/30/90`) using seeded `marketSeries` corpus.
+2. Add index-optimized `cards` query path for larger market-series volumes.
 3. Introduce stronger API-level auth checks for sensitive write routes as reliability and trust hardening.
